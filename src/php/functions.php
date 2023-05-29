@@ -216,6 +216,7 @@ function the_products( array $products ){
     $category = get_category( $product['category'] );
     $price = $product['price'];
     $units = $product['units'];
+    $content = $product['content'];
     $img = IMG_URI ."placeholder.png";
 
     $pet_icon = $icon_classes['Mascota'][$pet['name']];
@@ -230,18 +231,13 @@ function the_products( array $products ){
           <div class='Card__thumbnail'>
             <img class='Card__img' src='$img' alt=''>
             <h3 class='Card__title'>$name</h3>
-            <p class='Card__price'>$price</p>
+            <p class='Card__price'>$$price</p>
           </div>
           <div class='Card__cart'>
             <div class='Card__meta'>
               <i class='Icon fa-solid fa-cart-plus'></i>
               <p class=''>$availability</p>
             </div>
-            <form method='POST'>
-              <input type='hidden' name='id' value='$id'>
-              <input class='Card__units' type='number' name='units' placeholder='0' min='1' max='$units' required>
-              <input class='Card__add'type='submit' name='add' value='Agregar'>
-            </form>
           </div>
         </div>
         <div class='Card__back'>
@@ -254,7 +250,24 @@ function the_products( array $products ){
               <i class='fa-solid $category_icon'></i>
               <p class=''>$category[name]</p>
             </span>
+            <span class='Card__Content'>
+              <i class='fa-solid fa-content'></i>
+              <p class=''>$content</p>
+            </span>
           </div>
+          <form class='Cart' method='POST'>
+            <input type='hidden' name='id' value='$id'>
+            <input type='hidden' name='units' value='0'>
+            <div class='Qty' data-max='$units'>
+              <span class='Qty__display'>0</span>
+              <span class='Qty__buttons'>
+                <span class='Qty__button Qty__button--add'> + </span>
+                <span class='Qty__button Qty__button--remove'> - </span>
+              </span>
+            </div>
+            <input class='Cart__add Button' type='submit' name='add' value='Agregar'>
+          </form>
+          <button class='Button Button--back'>Volver</button>
         </div>
       </div>
     ";

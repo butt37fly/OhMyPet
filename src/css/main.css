@@ -17,9 +17,9 @@
   --s-header: 120px;
 
   /* Font Size */
-  --f-title: calc(var(--s-xl) + 0.5vw);
-  --f-subtitle: calc(var(--s-m) + 0.5vw);
-  --f-text: calc(var(--s-xxs) + 0.5vw);
+  --f-title: calc(var(--s-l) + .3vw);
+  --f-subtitle: calc(var(--s-s) + .3vw);
+  --f-text: calc(var(--s-xxs) + .3vw);
 
   /* Colors */
   --c-black: #2a2a2a;
@@ -56,7 +56,7 @@
   padding: 0;
   box-sizing: border-box;
   max-width: 100%;
-  transition: color, background-color, opacity, transform 0.3s;
+  transition: 0.3s;
   font-family: "Ubuntu", sans-serif;
   list-style: none;
   scroll-behavior: smooth;
@@ -152,7 +152,20 @@ img{
 
 /*** Overlay ***/
 
+.Overlay{
+  width: 100vw;
+  height: 100vh;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: none;
+}
 
+body.ready .Overlay{
+  opacity: 0;
+}
 
 /*** Header ***/
 
@@ -240,13 +253,26 @@ img{
 
 /*** Card ***/
 
+.Button{
+  --c-bg: ;
+  --c-text: ;
+  width: auto;
+  padding: var(--s-xxs) var(--s-s);
+  border: unset;
+  cursor: pointer;
+}
+
+.Button:hover{
+
+}
+
 /* Estructura */
 
 .Card {
   width: 90%;
   height: 100%;
   position: relative;
-  padding: var(--s-xs);
+  padding: var(--s-xxs);
   margin: auto;
   border-radius: var(--d-border-radius) var(--d-border-radius) 0 0;
   border: var(--d-border);
@@ -270,6 +296,10 @@ img{
   backface-visibility: hidden;
 }
 
+.Card__front{
+  cursor: pointer;
+}
+
 .Card__back{
   position: absolute;
   top: 0;
@@ -283,17 +313,72 @@ img{
 .Card__thumbnail {
   width: 100%;
   height: auto;
-  cursor: pointer;
+  margin-bottom: var(--s-s);
 }
 
 .Card__img{
+  --border: calc(var(--d-border-radius) / 2);
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
   object-position: center;
   overflow: hidden;
-  border-radius: var(--d-border-radius);
+  border-radius: var(--border);
+  margin-bottom: var(--s-xxs);
 }
+
+/* Cart */
+
+.Card__cart{
+  width: 100%;
+  height: auto;
+}
+
+.Card__meta{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--s-xxs);
+}
+
+.Cart{
+  display: flex;
+  justify-content: center;
+  gap: var(--s-xxs);
+}
+
+/*** Qty Button ***/
+
+.Qty{
+  display: flex;
+  background-color: white;
+  width: auto;
+}
+
+.Qty__display{
+  padding: var(--s-xxs) var(--s-s);
+}
+
+.Qty__buttons{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: auto var(--s-xxs);
+}
+
+.Qty__button{
+  width: auto;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 var(--s-xxs);
+  cursor: pointer;
+  user-select: none;
+}
+
+
+
 
 
 /*********************************
@@ -318,7 +403,7 @@ img{
   width: 100%;
   height: auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--s-s);
 }
 

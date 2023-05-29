@@ -1,3 +1,6 @@
+  
+  <!-- Footer -->
+
   <footer class="Footer">
     
   </footer>
