@@ -1,0 +1,330 @@
+/*********************************
+ *                               *
+ *   --. Variables               *
+ *                               *
+**********************************/
+
+:root {
+  /* General Sizes */
+  --s-xxs: 0.64rem;
+  --s-xs: 0.8rem;
+  --s-s: 1rem;
+  --s-m: 1.25rem;
+  --s-l: 1.563rem;
+  --s-xl: 1.953rem;
+  --s-xxl: 2.441rem;
+
+  --s-header: 120px;
+
+  /* Font Size */
+  --f-title: calc(var(--s-xl) + 0.5vw);
+  --f-subtitle: calc(var(--s-m) + 0.5vw);
+  --f-text: calc(var(--s-xxs) + 0.5vw);
+
+  /* Colors */
+  --c-black: #2a2a2a;
+  --c-black--15: rgba(42, 42, 42, 0.15);
+
+  --c-grey: #626161;
+
+  --c-white: #d9d9d9;
+
+  --c-pink: #e1addf;
+  --c-yellow: #fecb84;
+  --c-green: #96f7b2;
+  --c-blue: #70e5dd;
+  --c-orange: #eda29f;
+
+  /* Default Properties */
+  --d-border-width: 3px;
+  --d-border-color: var(--c-black);
+  --d-border-radius: 5px;
+  --d-border-radius-rounded: 50px;
+  --d-border: solid var(--d-border-width) var(--d-border-color);
+
+  --d-shadow: 0 0 25px var(--c-black--15);
+}
+
+/*********************************
+ *                               *
+ *   --. Estilos generales       *
+ *                               *
+**********************************/
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+  transition: color, background-color, opacity, transform 0.3s;
+  font-family: "Ubuntu", sans-serif;
+  list-style: none;
+  scroll-behavior: smooth;
+  color: var(--c-black);
+}
+
+*::-webkit-scrollbar {
+  width: 7px;
+  background-color: var(--c-black--15);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--c-orange);
+  border-radius: var(--d-border-radius-rounded);
+}
+
+*::-webkit-scrollbar-button {
+  height: 5px;
+  background-color: var(--c-white);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Josefin Sans", sans-serif;
+}
+
+h1,
+h2 {
+  font-size: var(--f-title);
+}
+
+h3,
+h4,
+h5 {
+  font-size: var(--f-subtitle);
+}
+
+p,
+span,
+label {
+  font-size: var(--f-text);
+}
+
+a{
+  font-size: inherit;
+}
+
+img{
+  height: auto;
+  object-fit: contain;
+}
+
+/*********************************
+ *                               *
+ *   --. Clases                  *
+ *                               *
+**********************************/
+
+.flex{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex--start-x{
+  justify-content: center;
+}
+
+.flex--start-y{
+  align-items: center;
+}
+
+.flex--column{
+  flex-direction: column;
+}
+
+.flex--column.flex--start-x{
+  justify-content: center;
+}
+
+.flex--column.flex--start-y{
+  align-items: center;
+}
+
+/*********************************
+ *                               *
+ *   --. Componentes             *
+ *                               *
+**********************************/
+
+/*** Overlay ***/
+
+
+
+/*** Header ***/
+
+/** Default **/
+
+.Header{
+  width: 100%;
+  height: var(--s-header);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+
+.Header__wrapper{
+  width: inherit;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Header__section{
+  width: 32%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--s-xs);
+}
+
+.Header__section:first-child{
+  justify-content: flex-start;
+}
+
+.Header__section:last-child{
+  justify-content: flex-end;
+}
+
+/* Logo */
+
+.Header__logo{
+  width: inherit;
+}
+
+.Header__logo__img{
+  width: min(100%, 180px);
+}
+
+/* Nav */
+
+.Header__nav{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s-s);
+}
+
+.Header__nav__link{
+  text-decoration: none;
+  font-weight: 400;
+  font-size: var(--f-text);
+  color: var(--c-grey);
+}
+
+.Header__nav__link--active{
+  color: var(--c-orange);
+  font-weight: 600;
+}
+
+.Header__nav__link:not(.Header__nav__link--active):hover{
+  color: var(--c-black);
+}
+
+/*** Main ***/
+
+.Main{
+  width: 100%;
+  height: auto;
+  min-height: calc(100vh - var(--s-header));
+  margin-top: var(--s-header);
+}
+
+/*** Footer ***/
+
+/*** Card ***/
+
+/* Estructura */
+
+.Card {
+  width: 90%;
+  height: 100%;
+  position: relative;
+  padding: var(--s-xs);
+  margin: auto;
+  border-radius: var(--d-border-radius) var(--d-border-radius) 0 0;
+  border: var(--d-border);
+  background: var(--c-white);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.Card--active{
+  transform: rotateY(180deg);
+}
+
+.Card__front, .Card__back{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.Card__back{
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+
+/* Thumbnail */
+
+.Card__thumbnail {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
+.Card__img{
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center;
+  overflow: hidden;
+  border-radius: var(--d-border-radius);
+}
+
+
+/*********************************
+*                               *
+*   --. Páginas                 *
+*                               *
+**********************************/
+
+/*** Tienda ***/
+
+.Store{
+  width: min(100%, 1200px);
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
+
+.products{
+  width: 100%;
+  height: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-s);
+}
+
+
+
+
+
+
+

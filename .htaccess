@@ -3,3 +3,5 @@ RewriteEngine on
 
 RewriteRule ^tienda/$ tienda.php
 RewriteRule ^contacto/$ contacto.php
+RewriteRule ^cuenta/$ cuenta.php
+RewriteRule ^carrito/$ carrito.php
