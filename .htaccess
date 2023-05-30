@@ -1,7 +1,4 @@
 Options +FollowSymLinks
 RewriteEngine on
 
-RewriteRule ^tienda/$ tienda.php
-RewriteRule ^contacto/$ contacto.php
-RewriteRule ^cuenta/$ cuenta.php
-RewriteRule ^carrito/$ carrito.php
+RewriteRule ^([a-zA-Z]{2,254})/$ index.php?page=$1

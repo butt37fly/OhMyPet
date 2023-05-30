@@ -41,18 +41,33 @@ function get_script( string $name , string $type ){
  * @return mixed Include del fichero
  */
 function get_template( string $name ){
-  $file_path = LAYOUTS_PATH .$name .".php";
+  $file_path = LAYOUTS_PATH ."/templates/$name.php";
 
   return file_exists( $file_path ) 
   ? include $file_path
   : "¡Error! El directorio no existe";
 }
 
+function get_layout(){
+  $pages = [
+    "home" => LAYOUTS_PATH ."index.php",
+    "tienda" => LAYOUTS_PATH ."tienda.php",
+    "contacto" => LAYOUTS_PATH ."contacto.php"
+  ];
+  $target = $_GET['page'];
+  
+  if( !isset($_GET['page']) || !$pages[$target] ){
+    return include $pages['home'];
+  }
+
+  return include $pages[$target];
+}
+
 /**
  * Carga el header del sitio ubicado en la carpeta `layouts`
  */
 function get_header(){
-  $file_path = LAYOUTS_PATH ."header/header.php";
+  $file_path = LAYOUTS_PATH ."/templates/header/header.php";
   return file_exists( $file_path ) 
   ? include $file_path
   : "¡Error! El fichero no existe";
@@ -62,7 +77,7 @@ function get_header(){
  * Carga el footer del sitio ubicado en la carpeta `layouts`
  */
 function get_footer(){
-  $file_path = LAYOUTS_PATH ."footer.php";
+  $file_path = LAYOUTS_PATH ."/templates/footer.php";
   return file_exists( $file_path ) 
   ? include $file_path
   : "¡Error! El fichero no existe";
