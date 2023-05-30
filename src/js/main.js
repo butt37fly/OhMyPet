@@ -15,16 +15,27 @@ Init();
 
 /***************************************/
 
+/**
+ * Condiciona e inicializa las funciones del sitio
+ */
 function BodyFunctions(){
   if( document.querySelector('.Card') ){
     Products();
   }
 }
 
+/**
+ * Controla toda la interactividad relacionada con los productos
+ */
 function Products(){
   const Cards = document.querySelectorAll('.Card');
   if ( !Cards || !Cards.length > 0 ) return;
 
+  /**
+   * Efecto de rotación de las cards
+   * 
+   * @param {HTMLElement} card Elemento (Producto) con la clase `.Card`  
+   */
   function handleCardSide( card ){
     const updateClass = (el) => {
       el.classList.toggle('Card--active');
@@ -37,15 +48,21 @@ function Products(){
     button.addEventListener( 'click', () => updateClass(card) );
   }
 
+  /**
+   * Funcionamiento del botón para modificar la cantidad
+   * 
+   * @param {HTMLElement} card Elemento (Producto) con la clase `.Card`  
+   */
   function addToCart( card ){
     const form = card.querySelector('.Cart');
     if ( !form ) return;
 
     const qtyButton = form.querySelector( '.Qty' );
     const units = form.querySelector( 'input[name="units"]' );
+    const max = form.querySelector( 'input[name="max"]' );
 
-    const handleUnits = ( qty, unitsInput ) => {
-      const max = parseInt(qty.dataset.max);
+    const handleUnits = ( qty, unitsInput, max ) => {
+      max = parseInt(max.value);
       const button = {
         display : qty.querySelector('.Qty__display'),
         addButton : qty.querySelector('.Qty__button--add'),
@@ -75,13 +92,7 @@ function Products(){
       button.removeButton.addEventListener( 'click', removeUnits );
     }
 
-    const updateCart = (e) => {
-      e.preventDefault();
-      console.log( e );
-    }
-
-    handleUnits(qtyButton, units);
-    form.addEventListener( 'submit', (event) => updateCart(event) );
+    handleUnits(qtyButton, units, max);
   }
 
   Cards.forEach( (card) => {

@@ -1,5 +1,6 @@
 <?php 
 
+# Funciones generales
 
 /** 
  * Obtiene el título de la página actual 
@@ -33,35 +34,45 @@ function get_script( string $name , string $type ){
 }
 
 /**
- * Incluye una plantilla de la carpeta `php/templates`
+ * Incluye una plantilla de la carpeta `layouts`
  * 
  * @param string $name Nombre de la plantilla solicitada
  * 
  * @return mixed Include del fichero
  */
 function get_template( string $name ){
-  $templates_path = 'src/php/templates/';
-  $file_path = ROOT_PATH . $templates_path .$name .".php";
+  $file_path = LAYOUTS_PATH .$name .".php";
 
   return file_exists( $file_path ) 
   ? include $file_path
   : "¡Error! El directorio no existe";
 }
 
+/**
+ * Carga el header del sitio ubicado en la carpeta `layouts`
+ */
 function get_header(){
-  $file_path = ROOT_PATH ."header.php";
+  $file_path = LAYOUTS_PATH ."header/header.php";
   return file_exists( $file_path ) 
   ? include $file_path
   : "¡Error! El fichero no existe";
 }
 
+/**
+ * Carga el footer del sitio ubicado en la carpeta `layouts`
+ */
 function get_footer(){
-  $file_path = ROOT_PATH ."footer.php";
+  $file_path = LAYOUTS_PATH ."footer.php";
   return file_exists( $file_path ) 
   ? include $file_path
   : "¡Error! El fichero no existe";
 }
 
+/**
+ * Obtiene un elemento html con los enlaces del menú de navegación del header
+ * 
+ * @return string
+ */
 function get_page_nav(){
   $pages = [ 
     [
@@ -92,9 +103,55 @@ function get_url_vars( string $var = '' ){
   }
 }
 
+/**
+ * Función general para redireccionar al usuario a las diferentes páginas del sitio
+ * 
+ * @param string $page_title Si no se especifica ninguna página, redirecciona al inicio
+ */
+function redirect( string $page_title = "" ){
+  $pages = [
+    'store' => STORE,
+    'contact' => CONTACT
+  ];
 
+  $target = $pages[$page_title] ? $pages[$page_title] : SITE_URL;
 
+  header("Location: $target");
+  return;
+}
 
+# Funciones de la tienda
+
+/**
+ * Añade productos o actualiza el carrito de compras
+ * 
+ * @param array $cart Array del carrito de compras
+ * @param array $item Información del producto que se añadirá o actualizará
+ * 
+ * @return mixed Carrito de compras actualizado
+ */
+function set_value( array $cart, array $item ){
+
+  $id = $item['id'];
+  $units = $item['units'];
+  $max = $item['max'];
+
+  // Finaliza si uno de los dos parámetros está vacío
+  if( empty($id) || empty($units) ){ return null; }
+
+  foreach ($cart as $key => $product) {
+    // Si el producto ya existe en el carrito, actualiza las unidades
+    if ( $product['id'] === $id ){
+      $new_quantity = $cart[$key]['units'] + $units;
+      $cart[$key]['units'] = $new_quantity >= $max ? $max : $new_quantity; 
+
+      return $cart;
+    }
+  }
+  
+  $cart[] = array( "id" => $id, "units" => $units );
+  return $cart;
+}
 
 /**
  * Devuelve un arreglo con la información de los productos consultados
@@ -255,17 +312,18 @@ function the_products( array $products ){
               <p class=''>$content</p>
             </span>
           </div>
-          <form class='Cart' method='POST'>
+          <form class='Cart' method='POST' action='../inc/cart.php'>
             <input type='hidden' name='id' value='$id'>
             <input type='hidden' name='units' value='0'>
-            <div class='Qty' data-max='$units'>
+            <input type='hidden' name='max' value='$units'>
+            <div class='Qty'>
               <span class='Qty__display'>0</span>
               <span class='Qty__buttons'>
                 <span class='Qty__button Qty__button--add'> + </span>
                 <span class='Qty__button Qty__button--remove'> - </span>
               </span>
             </div>
-            <input class='Cart__add Button' type='submit' name='add' value='Agregar'>
+            <input class='Cart__add Button' type='submit' name='addToCart' value='Agregar'>
           </form>
           <button class='Button Button--back'>Volver</button>
         </div>

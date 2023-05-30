@@ -1,4 +1,4 @@
-<?php require "src/php/config.php"; ?>
+<?php require "inc/config.php"; ?>
 
 <?php get_header()?>
 

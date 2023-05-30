@@ -1,19 +1,21 @@
 <?php 
 
-require "database.php";
-require "functions.php";
+require_once "database.php";
+require_once "functions.php";
 
 define('SITE_TITLE' , 'OhMyPet' );
 define('SITE_URL' , 'http://localhost/OhMyPet/' );
 
 define('ROOT_PATH', getcwd() .'/' );
 
-# Rutas para acceder desde fuera del directorio src
+define('LAYOUTS_PATH', ROOT_PATH .'layouts/' );
+
+# Rutas del contenido multimedia
 define('CSS_URI', SITE_URL .'src/css/' );
 define('JS_URI', SITE_URL .'src/js/' );
 define('IMG_URI', SITE_URL .'src/img/' );
 
-# SITIOS
+# Sitios
 define('HOME', SITE_URL );
 define('STORE', SITE_URL .'tienda/' );
 define('CONTACT', SITE_URL .'contacto/' );
