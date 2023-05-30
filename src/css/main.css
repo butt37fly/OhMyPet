@@ -78,6 +78,13 @@
   background-color: var(--c-white);
 }
 
+body{
+  background-image: url('../img/background.png');
+  background-size: contain;
+  background-repeat: repeat;
+  background-position: center top;
+}
+
 h1,
 h2,
 h3,
@@ -110,38 +117,6 @@ a{
 img{
   height: auto;
   object-fit: contain;
-}
-
-/*********************************
- *                               *
- *   --. Clases                  *
- *                               *
-**********************************/
-
-.flex{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.flex--start-x{
-  justify-content: center;
-}
-
-.flex--start-y{
-  align-items: center;
-}
-
-.flex--column{
-  flex-direction: column;
-}
-
-.flex--column.flex--start-x{
-  justify-content: center;
-}
-
-.flex--column.flex--start-y{
-  align-items: center;
 }
 
 /*********************************
@@ -376,10 +351,6 @@ body.ready .Overlay{
   cursor: pointer;
   user-select: none;
 }
-
-
-
-
 
 /*********************************
 *                               *
