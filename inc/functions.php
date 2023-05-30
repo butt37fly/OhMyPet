@@ -122,8 +122,15 @@ function get_url_vars( string $var = '' ){
  * Función general para redireccionar al usuario a las diferentes páginas del sitio
  * 
  * @param string $page_title Si no se especifica ninguna página, redirecciona al inicio
+ * @param bool $back Si se define como true, redirecciona al usuario al sitio anterior
  */
-function redirect( string $page_title = "" ){
+function redirect( string $page_title = "", bool $back = false ){
+
+  if ( $back === true ){
+    header("Location: ".$_SERVER['HTTP_REFERER']);
+    return;
+  }
+
   $pages = [
     'store' => STORE,
     'contact' => CONTACT
@@ -291,6 +298,8 @@ function the_products( array $products ){
     $content = $product['content'];
     $img = IMG_URI ."placeholder.png";
 
+    $target = SITE_URL ."inc/cart.php";
+
     $pet_icon = $icon_classes['Mascota'][$pet['name']];
     $category_icon = $icon_classes['Categoria'][$category['name']];
     $availability = $units > 0 
@@ -327,7 +336,7 @@ function the_products( array $products ){
               <p class=''>$content</p>
             </span>
           </div>
-          <form class='Cart' method='POST' action='../inc/cart.php'>
+          <form class='Cart' method='POST' action='$target'>
             <input type='hidden' name='id' value='$id'>
             <input type='hidden' name='units' value='0'>
             <input type='hidden' name='max' value='$units'>
@@ -346,7 +355,7 @@ function the_products( array $products ){
     ";
   }
 
-  return $output;
+  return "<section class='products'>$output</section>";
 }
 
 

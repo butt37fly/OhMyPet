@@ -13,7 +13,7 @@ if (isset($_POST['addToCart'])){
     $_SESSION['cart'] = $updated_cart;
   }
 
-  redirect( 'store' );
+  redirect( "", true );
   return;
 }
 

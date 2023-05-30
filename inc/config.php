@@ -9,6 +9,7 @@ define('SITE_URL' , 'http://localhost/OhMyPet/' );
 define('ROOT_PATH', getcwd() .'/' );
 
 define('LAYOUTS_PATH', ROOT_PATH .'layouts/' );
+define('INC_PATH', ROOT_PATH .'inc/' );
 
 # Rutas del contenido multimedia
 define('CSS_URI', SITE_URL .'src/css/' );
