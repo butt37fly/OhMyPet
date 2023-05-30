@@ -1,23 +1,31 @@
 <?php
 
+$pet = 0;
 $category = 0;
-$products = get_products($category); ?>
+
+if (isset($_GET['pet'])) {
+  $pet = get_pet($_GET['pet'])['id'];
+}
+
+if (isset($_GET['category'])) {
+  $category = get_category($_GET['category'])['id'];
+}
+
+$products = get_products($category, $pet); ?>
 
 <div class="Store">
 
-  <?php if (empty($products)): ?>
+  <?php get_template('filters'); ?>
+
+  <?php if(empty($products)): ?>
 
     <section class="flex">
-      <h1> Parece que aún no hay productos agregados</h1>
+      <h1> Aún no tenemos productos en esta categoría :(</h1>
     </section>
 
   <?php else: ?>
 
-    <section class="products">
+    <?php echo the_products($products); ?>
 
-      <?php echo the_products( $products ); ?>
-
-    </section>
-    
   <?php endif; ?>
 </div>

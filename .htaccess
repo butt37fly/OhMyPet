@@ -2,3 +2,8 @@ Options +FollowSymLinks
 RewriteEngine on
 
 RewriteRule ^([a-zA-Z]{2,254})/$ index.php?page=$1
+
+RewriteRule ^tienda/([a-zA-Z]{2,254})/$ index.php?page=tienda&pet=$1
+RewriteRule ^tienda/([a-zA-Z]{2,254})/([a-zA-Z]{2,254})/$ index.php?page=tienda&pet=$1&category=$2
+
+RewriteRule ^categorias/([a-zA-Z]{2,254})/$ index.php?page=categorias&category=$1

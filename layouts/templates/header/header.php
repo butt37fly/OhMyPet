@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo get_title()?></title>
-  <!-- Estilos -->
+  <!-- Styles -->
   <link rel="stylesheet" href="<?php echo get_script("main", "css")?>">
+  <link rel="stylesheet" href="<?php echo get_script("classes.min", "css")?>">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="<?php echo get_script("FontAwesome/fontawesome.min", "css")?>">
+  <link rel="stylesheet" href="<?php echo get_script("FontAwesome/solid.min", "css")?>">
   <!-- Scripts -->
   <script type="text/javascript" src="<?php echo get_script("main", "js")?>" defer></script>
-  <!-- FontAwesome -->
-  <link rel="preconnect" href="https://kit.fontawesome.com" />
-  <script src="https://kit.fontawesome.com/90787c1f40.js" crossorigin="anonymous"></script>
 </head>
 <body>
 

@@ -52,7 +52,8 @@ function get_layout(){
   $pages = [
     "home" => LAYOUTS_PATH ."index.php",
     "tienda" => LAYOUTS_PATH ."tienda.php",
-    "contacto" => LAYOUTS_PATH ."contacto.php"
+    "contacto" => LAYOUTS_PATH ."contacto.php",
+    "categorias" => LAYOUTS_PATH ."categorias.php"
   ];
   $target = $_GET['page'];
   
@@ -175,13 +176,20 @@ function set_value( array $cart, array $item ){
   return $cart;
 }
 
+#######################################
+#                                     #
+# Para obtener un elementos generales #
+#                                     #
+#######################################
+
 /**
  * Devuelve un arreglo con la información de los productos consultados
  * 
  * @param int $category_id Especifica el id de una categoría para filtrar los productos
+ * @param int $pet_id Especifica el id de una mascota para filtrar los productos
  * @return mixed
  */
-function get_products( int $category_id = 0 ){
+function get_products( int $category_id = 0, int $pet_id = 0 ){
   $pdo = db_connect();
 
   if (gettype( $pdo ) !== 'object'){
@@ -189,12 +197,31 @@ function get_products( int $category_id = 0 ){
     return;
   }
 
-  if( $category_id !== 0 ){
-    $query = 'SELECT * FROM `products` WHERE category = :category_id';
+  if( $category_id !== 0 && $pet_id !== 0 ){
+    // Si se especificó una categoría y una mascota
+
+    $query = "SELECT * FROM `products` WHERE category = :category_id AND pet = :pet_id";
     $consult = $pdo->prepare( $query );
     $consult->bindValue( ':category_id', $category_id );
+    $consult->bindValue( ':pet_id', $pet_id );
+
+  }elseif( $category_id !== 0 || $pet_id !== 0 ){
+    // Si se especificó una categoría o una mascota
+
+    if ( $category_id !== 0 ){
+      $where = 'category';
+      $param = $category_id;
+    } else {
+      $where = 'pet';
+      $param = $pet_id;
+    }
+
+    $query = "SELECT * FROM `products` WHERE $where = :query_param";
+    $consult = $pdo->prepare( $query );
+    $consult->bindValue( ':query_param', $param );
 
   } else {
+    // Si no se especificó ningún parámetro
     $query = 'SELECT * FROM `products`';
     $consult = $pdo->prepare( $query );
   }
@@ -208,6 +235,91 @@ function get_products( int $category_id = 0 ){
   return $result;
 }
 
+/**
+ * Devuelve un arreglo con toda la información del meta seleccionado
+ * 
+ * @param string $meta Especifica `pets` or `categories` para obtener la información respectiva
+ * @return mixed
+ */
+function get_meta( string $meta ){
+  $pdo = db_connect();
+
+  if (gettype( $pdo ) !== 'object'){
+    print_r($pdo);
+    return;
+  }
+
+  // Si no se especifica el meta a obtener
+  if( empty($meta) ){
+    return;
+  }
+  
+  $tables = [
+    'categories' => 'categories',
+    'pets' => 'pets',
+  ];
+  
+  if( !$tables[$meta] ){
+    return;
+  }
+  
+  $query = "SELECT * FROM `$tables[$meta]`";
+  $consult = $pdo->prepare( $query );
+  $consult->execute();
+  $result = $consult->fetchAll();
+  
+  $pdo = null;
+  $consult = null;
+
+  return $result;
+}
+
+#######################################
+
+#######################################
+#                                     #
+# Para obtener un elemento específico #
+#                                     #
+#######################################
+
+/**
+ * Obtiene un array la información de un producto específico
+ * 
+ * @param int $product_id Id del producto a consultar
+ * @return mixed
+ */
+function get_product( int $product_id ){
+  $pdo = db_connect();
+
+  if (gettype( $pdo ) !== 'object'){
+    print_r($pdo);
+    return;
+  }
+
+  # Si no se especifica el id de un producto
+  if ( !$product_id ){ 
+    return false; 
+  }
+
+  $query = 'SELECT * FROM `products` WHERE id = :product_id';
+  $consult = $pdo->prepare( $query );
+  $consult->bindValue( ':product_id', $product_id );
+
+  $consult->execute();
+  $result = $consult->fetch();
+  
+  $pdo = null;
+  $consult = null;
+
+  return $result;
+}
+
+/**
+ * Obtiene un array con la información de una categoría
+ * 
+ * @param mixed $category Especifica el `id` o el `slug` de la categoría a consultar
+ * @return mixed
+ */
 function get_category( mixed $category ){
   $pdo = db_connect();
 
@@ -241,7 +353,13 @@ function get_category( mixed $category ){
   return $result;
 }
 
-function get_pet( int $pet_id ){
+/**
+ * Obtiene un array con la información de una mascota
+ * 
+ * @param mixed $pet Especifica el `id` o el `slug` de la mascota a consultar
+ * @return mixed
+ */
+function get_pet( mixed $pet ){
   $pdo = db_connect();
 
   if (gettype( $pdo ) !== 'object'){
@@ -250,13 +368,21 @@ function get_pet( int $pet_id ){
   }
 
   # Si no se especifica ni un id ni un slug
-  if ( !$pet_id ){ 
+  if ( !$pet || empty($pet) ){ 
     return false; 
   }
+
+  if ( gettype($pet) === 'integer' && $pet !== 0 ){
+    $query = 'SELECT * FROM `pets` WHERE id = :pet_id';
+    $consult = $pdo->prepare( $query );
+    $consult->bindValue( ':pet_id', $pet );
+    
+  } else {
+    $query = 'SELECT * FROM `pets` WHERE slug = :pet_slug';
+    $consult = $pdo->prepare( $query );
+    $consult->bindValue( ':pet_slug', $pet );
+  }
   
-  $query = 'SELECT * FROM `pets` WHERE id = :pet_id';
-  $consult = $pdo->prepare( $query );
-  $consult->bindValue( ':pet_id', $pet_id );
   $consult->execute();
   $result = $consult->fetch();
   
@@ -265,6 +391,45 @@ function get_pet( int $pet_id ){
 
   return $result;
 }
+
+/**
+ * Devuelve un string con la url a donde apunta el botón de `get_filter()`
+ * Comprueba si el usuario debe ser redirigido a `categorias/categoria` o `tienda/mascota/categoria` 
+ * 
+ * @param string $slug slug de la categoría o mascota
+ * @return string
+ */
+function get_filter_url( string $slug ){
+  $pet = $_GET['pet'];
+  $category = $_GET['category'];
+  $url = "";
+
+  if ( (isset($pet) && isset($category)) || (isset($pet) && !isset($category)) ){
+    $url = STORE ."$pet/$slug/";
+  } else{
+    $url = CATEGORIES ."$slug/";
+  }
+  
+  return $url;
+}
+
+/**
+ * Devuelve una candena html con un botón que hace de filtro para redirigir a una categoría o mascota
+ * 
+ * @param array $data Item del array obtenido con la función `get_meta()`
+ */
+function get_filter( array $data ){
+
+  $name = $data['name'];
+  $icon = $data['icon'] ? "<i class='Icon $data[icon]'></i>" : "<i class='Icon fa-solid fa-dog'></i>";
+  $url = $data['url'] ? $data['url'] : get_filter_url( $data['slug'] );
+
+  $output = "<a href='$url' class='Button Button--$name'> $icon $name </a>";
+  
+  return $output;
+}
+
+#######################################
 
 /**
  * Devuelve una cadena html con los items consultados
@@ -307,7 +472,7 @@ function the_products( array $products ){
     : "Agotado";
 
     $output .= "
-      <div class='Card'>
+      <div class='Card Card--$category[name]'>
         <div class='Card__front'>
           <div class='Card__thumbnail'>
             <img class='Card__img' src='$img' alt=''>
@@ -323,17 +488,17 @@ function the_products( array $products ){
         </div>
         <div class='Card__back'>
           <div class='Card__info'>
-            <span class='Card__pet'>
-              <i class='fa-solid $pet_icon'></i>
-              <p class=''>$pet[name]</p>
+            <span class='Card__info__item Card__info__item--pet'>
+              <i class='Icon fa-solid $pet_icon'></i>
+              <p class=''>Para: $pet[name]</p>
             </span>
-            <span class='Card__category'>
-              <i class='fa-solid $category_icon'></i>
-              <p class=''>$category[name]</p>
+            <span class='Card__info__item Card__info__item--category'>
+              <i class='Icon fa-solid $category_icon'></i>
+              <p class=''>Categoría: $category[name]</p>
             </span>
-            <span class='Card__Content'>
-              <i class='fa-solid fa-content'></i>
-              <p class=''>$content</p>
+            <span class='Card__info__item Card__info__item--Content'>
+              <i class='Icon fa-solid fa-content'></i>
+              <p class=''>Contenido: $content</p>
             </span>
           </div>
           <form class='Cart' method='POST' action='$target'>

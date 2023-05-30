@@ -19,6 +19,7 @@ define('IMG_URI', SITE_URL .'src/img/' );
 # Sitios
 define('HOME', SITE_URL );
 define('STORE', SITE_URL .'tienda/' );
+define('CATEGORIES', SITE_URL .'categorias/' );
 define('CONTACT', SITE_URL .'contacto/' );
 define('ACCOUNT', SITE_URL .'cuenta/' );
 define('CART', SITE_URL .'carrito/' );
