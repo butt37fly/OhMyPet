@@ -23,26 +23,28 @@
 
   /* Colors */
   --c-black: #2a2a2a;
-  --c-black--15: rgba(42, 42, 42, 0.15);
+  --c-black--15: rgba(42, 42, 42, .25);
 
-  --c-grey: #626161;
+  --c-white: #fcfbfb;
+  
+  --c-grey: #d9d9d9;
+  --c-grey-1: #c2c2c2;
+  --c-grey-2: #9d9d9d;
 
-  --c-white: #d9d9d9;
-
-  --c-pink: #e1addf;
-  --c-yellow: #fecb84;
+  --c-violet: #e1addf;
+  --c-orange: #fecb84;
   --c-green: #96f7b2;
   --c-blue: #70e5dd;
-  --c-orange: #eda29f;
-
+  --c-pink: #eda29f;
+  
   /* Default Properties */
-  --d-border-width: 3px;
-  --d-border-color: var(--c-black);
+  --d-border-width: 1.5px;
+  --d-border-color: var(--c-grey-1);
   --d-border-radius: 5px;
   --d-border-radius-rounded: 50px;
   --d-border: solid var(--d-border-width) var(--d-border-color);
 
-  --d-shadow: 0 0 25px var(--c-black--15);
+  --d-shadow: 0px 3px 3px var(--c-black--15);
 }
 
 /*********************************
@@ -121,6 +123,20 @@ img{
 
 /*********************************
  *                               *
+ *   --. Animaciones             *
+ *                               *
+**********************************/
+
+@keyframes Rainbow{
+  20% { color: var(--c-violet); }
+  40% { color: var(--c-orange); }
+  60% { color: var(--c-green); }
+  80% { color: var(--c-blue); }
+  100%{ color: var(--c-black); }
+}
+
+/*********************************
+ *                               *
  *   --. Componentes             *
  *                               *
 **********************************/
@@ -130,7 +146,7 @@ img{
 .Overlay{
   width: 100vw;
   height: 100vh;
-  background-color: white;
+  background-color: var(--c-white);
   position: fixed;
   top: 0;
   left: 0;
@@ -153,6 +169,11 @@ body.ready .Overlay{
   top: 0;
   left: 0;
   z-index: 5;
+  background-color: var(--c-white);
+}
+
+.Header--scrolling{
+  filter: drop-shadow(var(--d-shadow))
 }
 
 .Header__wrapper{
@@ -203,7 +224,7 @@ body.ready .Overlay{
   text-decoration: none;
   font-weight: 400;
   font-size: var(--f-text);
-  color: var(--c-grey);
+  color: var(--c-grey-2);
 }
 
 .Header__nav__link--active{
@@ -226,24 +247,70 @@ body.ready .Overlay{
 
 /*** Footer ***/
 
-/*** Card ***/
+/*** Buttons ***/
 
 .Button{
-  --c-bg: ;
-  --c-text: ;
+  --c-bg: var(--c-pink);
+  --c-text: var(--c-black);
   width: auto;
+  display: flex;
+  justify-content: center;
+  gap: var(--s-xs);
   padding: var(--s-xxs) var(--s-s);
-  border: unset;
+  border: var(--d-border);
   cursor: pointer;
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  text-decoration: unset;
 }
+
+.Button--Accesorios{ --c-bg: var(--c-violet); }
+.Button--Alimento{ --c-bg: var(--c-orange); }
+.Button--Deporte{ --c-bg: var(--c-green); }
+.Button--Salud{ --c-bg: var(--c-blue); }
 
 .Button:hover{
-
+  filter: drop-shadow(var(--d-shadow));
 }
+
+/*** Qty Button ***/
+
+.Qty{
+  width: auto;
+  display: flex;
+  border: var(--d-border);
+}
+
+.Qty__display{
+  padding: var(--s-xxs) var(--s-s);
+  background-color: var(--c-white);
+}
+
+.Qty__buttons{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: auto var(--s-xxs);
+}
+
+.Qty__button{
+  width: auto;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 var(--s-xxs);
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--c-pink);
+}
+
+/*** Card ***/
 
 /* Estructura */
 
 .Card {
+  --c-category: var(--c-white);
   width: 90%;
   height: 100%;
   position: relative;
@@ -251,13 +318,34 @@ body.ready .Overlay{
   margin: auto;
   border-radius: var(--d-border-radius) var(--d-border-radius) 0 0;
   border: var(--d-border);
+  border-color: var(--c-grey-2);
   background: var(--c-white);
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
 
+.Card--Accesorios{ --c-category: var(--c-violet); }
+.Card--Alimento{ --c-category: var(--c-orange); }
+.Card--Deporte{ --c-category: var(--c-green); }
+.Card--Salud{ --c-category: var(--c-blue); }
+
 .Card--active{
   transform: rotateY(180deg);
+}
+
+.Card:has(
+  .Card__front:hover,
+  .Card__back .Qty__button:hover,
+  .Card__back .Button:hover){
+  border-color: var(--c-category);
+  box-shadow: var(--d-shadow);
+}
+
+.Card:has(
+  .Card__front:hover,
+  .Card__back .Qty__button:hover,
+  .Card__back .Button:hover) .Icon{
+  animation: 3s Rainbow infinite;
 }
 
 .Card__front, .Card__back{
@@ -276,6 +364,7 @@ body.ready .Overlay{
 }
 
 .Card__back{
+  justify-content: space-evenly;
   position: absolute;
   top: 0;
   left: 0;
@@ -316,40 +405,45 @@ body.ready .Overlay{
   gap: var(--s-xxs);
 }
 
+.Card__info{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.Card__info__item{
+  width: inherit;
+  display: flex;
+  justify-content: flex-start;
+  gap: var(--s-xxs);
+  padding: var(--s-xxs);
+}
+
 .Cart{
+  width: 100%;
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: var(--s-xxs);
 }
 
-/*** Qty Button ***/
+/*** Filters ***/
 
-.Qty{
-  display: flex;
-  background-color: white;
-  width: auto;
-}
-
-.Qty__display{
-  padding: var(--s-xxs) var(--s-s);
-}
-
-.Qty__buttons{
-  height: 100%;
+.Filters{
+  width: auto;  
   display: flex;
   flex-direction: column;
-  padding: auto var(--s-xxs);
+  gap: var(--s-s);
+  margin-bottom: var(--s-xl);
 }
 
-.Qty__button{
-  width: auto;
-  height: 100%;
+.Filters__section{
+  width: auto;  
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 0 var(--s-xxs);
-  cursor: pointer;
-  user-select: none;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--s-xs);
 }
 
 /*********************************
@@ -367,6 +461,7 @@ body.ready .Overlay{
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-top: var(--s-xl);
   margin: auto;
 }
 
