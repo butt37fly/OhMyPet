@@ -1,0 +1,6 @@
+- Cards styles
+- User page
+- Admin page
+- Action when purchase is completed
+- Dynamic color in boton filters
+- Encrypt passwords

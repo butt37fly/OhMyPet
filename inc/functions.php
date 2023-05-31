@@ -81,6 +81,7 @@ function get_layout(){
     "categorias" => LAYOUTS_PATH ."categorias.php",
     "search" => LAYOUTS_PATH ."search.php",
     "carrito" => LAYOUTS_PATH ."carrito.php",
+    "cuenta" => LAYOUTS_PATH ."cuenta.php",
   ];
   $target = $_GET['page'];
   
@@ -157,13 +158,34 @@ function redirect( string $page_title = "", bool $back = false ){
 
   $pages = [
     'store' => STORE,
-    'contact' => CONTACT
+    'contact' => CONTACT,
+    'account' => ACCOUNT,
+    'login' => ACCOUNT ."login/"
   ];
 
   $target = $pages[$page_title] ? $pages[$page_title] : SITE_URL;
 
   header("Location: $target");
   return;
+}
+
+/**
+ * Recupera el valor de `$_SESSION['msg']` e imprime una alerta con el contenido
+ */
+function get_msg(){
+  session_start();
+  if(isset($_SESSION['msg'])){
+
+    $type = $_SESSION['msg']['type'];
+    $msg = $_SESSION['msg']['content'];
+    $output = "
+      <section class='Form__notices Form__notices--$type'>
+        <p>$msg</p>
+      </section> ";
+    unset($_SESSION['msg']);
+
+    return $output;
+  } 
 }
 
 #######################################
@@ -714,9 +736,166 @@ function the_products( array $products ){
   return "<section class='products'>$output</section>";
 }
 
+#######################################
 
+#######################################
+#                                     #
+# Funciones referentes al usuario     #
+#                                     #
+#######################################
 
+/**
+ * Valida la información recibida, crea un usuario y ejecuta `login_user()`
+ * 
+ * @param array $form Formulario de registro
+ * @return mixed Devuelve un `string` con un mensaje si hubo algún error, sino, devuelve true
+ */
+function create_user( array $form ){
 
+  $first_name = trim($form['first_name']);
+  $last_name = trim($form['last_name']);
+  $email = trim($form['email']);
+  $password = trim($form['password']);
+  $val_password = trim($form['val_password']);
+  $role = "customer";
+  
+  # Valida si los campos está vacíos
+  if( empty($first_name) || empty($email) || empty($password)  || empty($val_password) ){
+    return "Debes rellenar todos los campos obligatorios.";
+  }
+  
+  # Valida si el correo es válido
+  if( strpos($email, "@") === false || strpos($email, ".com") == false ){
+    return "Debes ingresar un email válido.";
+  }
+  
+  # Valida si ambas contraseñas coinciden
+  if( $password !== $val_password ){
+    return "Las contraseñas no coinciden.";
+  }
 
+  # Valida si la contraseña tiene una longitud válida
+  if( strlen( $password ) <= 7 ){
+    return "Utiliza una contraseña más larga.";
+  }
 
+  # Valida si la contraseña incluye los carácteres requeridos
+  if( preg_match( "([A-Z])", $password ) !== 1 || preg_match( "([0-9])", $password ) !== 1 || preg_match( "([-_#!¿?.,])", $password ) !== 1 ){
+    return "Tu contraseña debe incluir mayúsculas, números y carácteres especiales.";
+  }
 
+  $pdo = db_connect();
+
+  if (gettype( $pdo ) !== 'object'){
+    return print_r($pdo);
+  }
+
+  $query = "SELECT email FROM `users` WHERE email = :user_email";
+  $consult = $pdo->prepare( $query );
+  $consult->bindValue( ':user_email', $email );
+  $consult->execute();
+  $result = $consult->fetch();
+  
+  # Valida si el correo electrónico ya ha sido registrado
+  if( !empty($result['email']) ){
+    $pdo = null;
+    $consult = null;
+    return "Este correo ya se encuentra en uso.";
+  }
+
+  $query = "INSERT INTO `users` (first_name, last_name, email, password, role) VALUES (:first_name, :last_name, :email, :password, :role)";
+  $consult = $pdo->prepare( $query );
+  $binded_params = array(
+    ":first_name" => $first_name, 
+    ":last_name" => $last_name,
+    ":email" => $email,
+    ":password" => $password,
+    ":role" => $role
+  );
+  
+  try {
+    $consult->execute( $binded_params );
+    login_user( $first_name, $role );
+    return true;
+
+  } catch (\Throwable $th) {
+    return "Vaya, parece que algo ha salido mal :(";
+  }
+}
+
+/**
+ * Valida la información recibida y ejecuta `login_user()`
+ * 
+ * @param array $form Formulario para iniciar sesión
+ * @return mixed Devuelve un `string` con un mensaje si hubo algún error, sino, devuelve true
+ */
+function validate_user( array $form ){
+  $email = $form['email'];
+  $password = $form['password'];
+
+  # Valida si los campos está vacíos
+  if( empty($email) || empty($password) ){
+    return "Debes rellenar todos los campos obligatorios.";
+  }
+  
+  # Valida si el correo es válido
+  if( strpos($email, "@") === false || strpos($email, ".com") == false ){
+    return "Debes ingresar un email válido.";
+  }
+
+  $pdo = db_connect();
+
+  if (gettype( $pdo ) !== 'object'){
+    return print_r($pdo);
+  }
+
+  $query = "SELECT first_name, email, password, role FROM `users` WHERE email = :user_email AND password = :user_password";
+  $consult = $pdo->prepare( $query );
+  $bind_params = array( 
+    ':user_email' =>  $email,
+    ':user_password' =>  $password
+   );
+
+  $consult->execute( $bind_params );
+  $result = $consult->fetch();
+
+  $pdo = null;
+  $consult = null;
+  
+  # Valida si el usuario ya se encuentra registrado
+  if( empty($result['email']) && empty($result['password']) ){
+    return "El correo o la contraseña no coinciden";
+  }
+
+  login_user( $result['first_name'], $result['role'] );
+  return true;
+}
+
+/**
+ * Inicia sesión con la información del usuario
+ * 
+ * @param string $name Nombre del usuario
+ * @param string $role Rol del usuario
+ */
+function login_user( string $name, string $role ){
+  session_start();
+  $_SESSION['user'] = array('name' => $name, 'role' => $role);
+  redirect("account");
+}
+
+/**
+ * Devuelve `true` si el usuario ha iniciado sesión, del o contrario devuelve `false`
+ */
+function is_logedin(){
+  session_start();
+  return isset($_SESSION['user']) ? true : false;
+}
+
+/**
+ * Cierra la sesión actual del usuario
+ */
+function logout_user(){
+  session_start();
+  unset($_SESSION['user']);
+  redirect();
+}

@@ -9,3 +9,5 @@ RewriteRule ^tienda/([a-zA-Z]{2,24})/([a-zA-Z]{2,24})/$ index.php?page=tienda&pe
 RewriteRule ^categorias/([a-zA-Z]{2,24})/$ index.php?page=categorias&category=$1
 
 RewriteRule ^search/(([^&]*){2,24})/$ index.php?page=search&search=$1
+
+RewriteRule ^cuenta/([a-zA-Z]{2,24})/$ index.php?page=cuenta&action=$1
