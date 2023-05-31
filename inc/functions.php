@@ -2,12 +2,37 @@
 
 # Funciones generales
 
+/**
+ * Define el nombre de la página actual del usuario 
+ */
+function get_page_active(){
+  
+  $page = $_GET['page'];
+  
+  if( !isset($page) ){ 
+    return 'inicio'; 
+  }
+
+  if ( isset($_GET['pet']) || isset($_GET['category']) ){
+    return 'tienda';
+  } 
+
+  return $page;
+}
+
 /** 
  * Obtiene el título de la página actual 
  * @return string 
  */
 function get_title(){
-  return SITE_TITLE;
+  
+  if ( empty(PAGE_ACTIVE) || PAGE_ACTIVE === 'inicio' ){ 
+    return SITE_TITLE; 
+  }
+  
+  $page_active = ucfirst(PAGE_ACTIVE);
+
+  return SITE_TITLE ." | $page_active";
 }
 
 /**
@@ -92,6 +117,7 @@ function get_footer(){
  * @return string
  */
 function get_page_nav(){
+  $page_active = ucfirst(PAGE_ACTIVE);
   $pages = [ 
     [
       "title" => "Inicio",
@@ -109,7 +135,8 @@ function get_page_nav(){
   $links = "";
 
   foreach ($pages as $key) {
-    $links .= "<li class='Header__nav__item'><a class='Header__nav__link' href='$key[link]'>$key[title]</a></li>";
+    $active_class = $page_active === $key['title'] ? "Header__nav__link--active" : "";
+    $links .= "<li class='Header__nav__item'><a class='Header__nav__link $active_class' href='$key[link]'>$key[title]</a></li>";
   }
 
   return "<ul class='Header__nav'>$links</ul>";
@@ -287,7 +314,11 @@ function get_cart_items(){
   return $output;
 }
 
-
+/**
+ * Devuelve una cadena html con un resumen del total a pagar
+ * 
+ * @return string
+ */
 function get_cart_totals(){
   session_start();
 
