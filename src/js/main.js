@@ -24,8 +24,11 @@ function BodyFunctions() {
   }
 
   if (document.querySelector(".Cart-item")) {
-    console.log( 'si' );
     Cart();
+  }
+
+  if( document.querySelector("#search-form")){
+    SearchInput();
   }
 }
 
@@ -115,5 +118,62 @@ function Cart(){
 
   Cards.forEach((card) => {
     addToCart(card);
+  });
+}
+
+/*
+ * Controla el funcionamiento de la barra de busqueda
+ */
+function SearchInput(){
+  const form = document.querySelector("#search-form")
+  const field = form.querySelector(".Form__field")
+  const input = form.querySelector("input[name='search']")
+  const icon = form.querySelector(".Form__field .Icon")
+
+  let canSubmit = false;
+  let target = "http://localhost/OhMyPet/search/";
+
+  // Modifica la url y envía el formulario
+  const submitForm = ( value ) => {
+    value = value.trimStart();
+    value = encodeURIComponent(value)
+    target = `${target}${value}/`
+    target = encodeURI(target);
+
+    window.location = target;
+  }
+
+  // Evita que el formulario se envíe normalmente
+  form.addEventListener( 'submit', (e) => {
+    e.preventDefault();
+  });
+
+  // Envía el formulario al hacer click sobre el ícono
+  icon.addEventListener( 'click', () => {
+    let value = input.value.trim()
+    if( canSubmit ) submitForm( value );
+  });
+
+  // Valida si se puede enviar el formulario
+  input.addEventListener( 'keydown', (e) => {
+    let value = input.value.trim()
+    let length = value.length
+    const isReady = () => {
+      if( canSubmit ){
+        input.classList.remove('Form__input--alert')
+        field.classList.add('Form__field--ready')
+        
+      } else {
+        input.classList.add('Form__input--alert')
+        field.classList.remove('Form__field--ready')
+      }
+    }
+    
+    canSubmit = length > 2
+    isReady();
+
+    if ( e.code == 'Enter' && canSubmit ){
+      submitForm( value );
+    } 
   });
 }

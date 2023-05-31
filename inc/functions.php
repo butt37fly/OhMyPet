@@ -377,35 +377,43 @@ function get_products( int $category_id = 0, int $pet_id = 0 ){
     return;
   }
 
-  if( $category_id !== 0 && $pet_id !== 0 ){
-    // Si se especificó una categoría y una mascota
+  if( isset($_GET['search']) ){
 
-    $query = "SELECT * FROM `products` WHERE category = :category_id AND pet = :pet_id";
+    $query = "SELECT * FROM `products` WHERE name LIKE :search";
     $consult = $pdo->prepare( $query );
-    $consult->bindValue( ':category_id', $category_id );
-    $consult->bindValue( ':pet_id', $pet_id );
-
-  }elseif( $category_id !== 0 || $pet_id !== 0 ){
-    // Si se especificó una categoría o una mascota
-
-    if ( $category_id !== 0 ){
-      $where = 'category';
-      $param = $category_id;
-    } else {
-      $where = 'pet';
-      $param = $pet_id;
-    }
-
-    $query = "SELECT * FROM `products` WHERE $where = :query_param";
-    $consult = $pdo->prepare( $query );
-    $consult->bindValue( ':query_param', $param );
-
+    $consult->bindValue( ':search', "%$_GET[search]%" );
+    
   } else {
-    // Si no se especificó ningún parámetro
-    $query = 'SELECT * FROM `products`';
-    $consult = $pdo->prepare( $query );
+    if( $category_id !== 0 && $pet_id !== 0 ){
+      // Si se especificó una categoría y una mascota
+  
+      $query = "SELECT * FROM `products` WHERE category = :category_id AND pet = :pet_id";
+      $consult = $pdo->prepare( $query );
+      $consult->bindValue( ':category_id', $category_id );
+      $consult->bindValue( ':pet_id', $pet_id );
+  
+    }elseif( $category_id !== 0 || $pet_id !== 0 ){
+      // Si se especificó una categoría o una mascota
+  
+      if ( $category_id !== 0 ){
+        $where = 'category';
+        $param = $category_id;
+      } else {
+        $where = 'pet';
+        $param = $pet_id;
+      }
+  
+      $query = "SELECT * FROM `products` WHERE $where = :query_param";
+      $consult = $pdo->prepare( $query );
+      $consult->bindValue( ':query_param', $param );
+  
+    } else {
+      // Si no se especificó ningún parámetro
+      $query = 'SELECT * FROM `products`';
+      $consult = $pdo->prepare( $query );
+    }  
   }
-
+  
   $consult->execute();
   $result = $consult->fetchAll();
   

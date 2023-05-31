@@ -13,10 +13,10 @@
     </section>
     
     <section class="Header__section Header__section--right">
-      <form>
+      <form id="search-form">
         <div class="Form__field">
           <i class="Icon fa-solid fa-search"></i>
-          <input class="Form__input" type="text" placeholder="Busca lo que necesites">
+          <input class="Form__input" type="text" name="search" placeholder="Busca lo que necesites">
         </div>
       </form>
       

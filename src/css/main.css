@@ -501,6 +501,10 @@ body.ready .Overlay{
   border-radius: var(--d-border-radius);
 }
 
+.Form__input--alert{
+  border-color: var(--c-pink);
+}
+
 .Form__field .Icon{
   position: absolute;
   right: 13px;
