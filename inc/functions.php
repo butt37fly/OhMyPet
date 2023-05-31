@@ -244,7 +244,7 @@ function get_cart_items(){
   $output = "";
 
   if( !isset($_SESSION['cart']) || count($_SESSION['cart']) == 0){ 
-    return "<h1>Aún no has agregado productos a tu carrito.</h1>"; 
+    return "<section class='flex'><h1 style='text-align: center'>Aún no has agregado productos a tu carrito.</h1></section>"; 
   }
   
   foreach ($cart as $product) {
@@ -289,7 +289,40 @@ function get_cart_items(){
 
 
 function get_cart_totals(){
+  session_start();
 
+  $cart = $_SESSION['cart'];
+  $items = "";
+  $final_total = 0;
+
+  if( !isset($_SESSION['cart']) || count($_SESSION['cart']) == 0){ return ""; }
+  
+  foreach ($cart as $product) {
+    $name = $product['name'];
+    $price = $product['price'];
+    $units = $product['units'];
+    $total = $price * $units;
+
+    $final_total += $total;
+    $items .= "
+      <li class='Totals__item'>
+        <span class='Totals__name'>$name x $units</span>
+        <span class='Totals__price'>$$total</span>
+      </li>
+    ";
+  }
+
+  $output = "    
+    <ul class='Totals__list'>
+      $items
+    </ul>
+    <div class='Totals__section'>
+      <h2 class='Totals__value'>Total: $$final_total</h2>
+      <a class='Button Totals__buy'>Comprar</a>
+    </div>
+  ";
+
+  return $output;
 }
 
 #######################################

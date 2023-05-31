@@ -543,11 +543,24 @@ body.ready .Overlay{
 /*** Carrito ***/
 
 .Cart-view{
-  padding-top: var(--s-xl);
+  width: min(100%, 1200px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: auto;
+  padding: var(--s-xl) var(--s-s);
+}
+
+.Cart-view:has(.Cart-view__wrapper h1){
+  justify-content: center;
+}
+
+.Cart-view__wrapper:has(h1) + .Cart-view__totals{
+  display: none;
 }
 
 .Cart-view__wrapper{
-  width: 70%;
+  width: 65%;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -595,6 +608,43 @@ body.ready .Overlay{
 
 .Cart-item__remove .Icon{
   color: var(--c-black);
+}
+
+.Cart-view__totals{
+  width: 33%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-s);
+  border: var(--d-border);
+  border-radius: var(--d-border-radius);
+  background-color: var(--c-white);
+}
+
+.Totals__list{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: var(--s-xxs);
+  border-bottom: var(--d-border);
+  margin-bottom: var(--s-xxs);
+}
+
+.Totals__item{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.Totals__name{
+  font-size: var(--f-subtitle);
+}
+
+.Totals__section{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-xxs);
 }
 
 
