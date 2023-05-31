@@ -12,16 +12,19 @@
       <?php echo get_page_nav(); ?>
     </section>
     
-    <section class="Header__section">
+    <section class="Header__section Header__section--right">
       <form>
-        <input type="text">
+        <div class="Form__field">
+          <i class="Icon fa-solid fa-search"></i>
+          <input class="Form__input" type="text" placeholder="Busca lo que necesites">
+        </div>
       </form>
-
+      
       <a href="<?php echo ACCOUNT; ?>">
         <i class="Icon fa-solid fa-user"></i>
       </a>
       <a href="<?php echo CART; ?>">
-        <i class="Icon fa-solid fa-cart-shopping"></i>
+        <i class="Icon Icon--cart fa-solid fa-cart-shopping" data-cart-units="<?php echo get_cart_units();?>"></i>
       </a>
     </section>
   

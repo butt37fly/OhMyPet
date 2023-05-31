@@ -82,7 +82,7 @@
 
 body{
   background-image: url('../img/background.png');
-  background-size: contain;
+  background-size: cover;
   background-repeat: repeat;
   background-position: center top;
 }
@@ -190,7 +190,39 @@ body.ready .Overlay{
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--s-xs);
+  padding: var(--s-m);
+}
+
+.Header__section--right{
+  gap: var(--s-m);
+}
+
+.Header__section--right > a .Icon{
+  font-size: var(--f-subtitle);
+}
+
+.Header__section--right .Icon--cart{
+  position: relative;
+}
+
+.Header__section--right .Icon--cart:after{
+  content: attr(data-cart-units);
+  height: auto;
+  aspect-ratio: 1;
+  display: flex;
+  position: absolute;
+  top: -60%;
+  right: -40%;
+  padding: 6px;
+  line-height: 70%;
+  font-size: .65rem;
+  border-radius: 100px;
+  color: var(--c-white);
+  background: var(--c-pink);
+}
+
+.Header__section--right .Icon--cart[data-cart-units="empty"]::after{
+  content: unset;
 }
 
 .Header__section:first-child{
@@ -446,6 +478,41 @@ body.ready .Overlay{
   gap: var(--s-xs);
 }
 
+/*** Form ***/
+
+.Form{
+
+}
+
+.Form__field{
+  width: auto;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.Form__input{
+  width: auto;
+  padding: 10px 15px;
+  outline: unset;
+  border: var(--d-border);
+  border-radius: var(--d-border-radius);
+}
+
+.Form__field .Icon{
+  position: absolute;
+  right: 13px;
+  color: var(--c-grey-2);
+}
+
+.Form__field--ready .Icon{
+  color: var(--c-black);
+  cursor: pointer;
+}
+
+
 /*********************************
 *                               *
 *   --. Páginas                 *
@@ -472,6 +539,65 @@ body.ready .Overlay{
   grid-template-columns: repeat(5, 1fr);
   gap: var(--s-s);
 }
+
+/*** Carrito ***/
+
+.Cart-view{
+  padding-top: var(--s-xl);
+}
+
+.Cart-view__wrapper{
+  width: 70%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-m);
+}
+
+.Cart-item{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-xxs);
+  border: var(--d-border);
+  border-radius: var(--d-border-radius);
+  background-color: var(--c-white);
+}
+
+.Cart-item__section{
+  display: flex;
+  align-items: center;
+  gap: var(--s-s);
+}
+
+.Cart-item__img{
+  width: 100px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: calc(var(--d-border-radius) / 2);
+  overflow: hidden;
+  object-position: center;
+}
+
+.Cart-item__title{
+  font-size: var(--f-subtitle);
+  margin-bottom: 3px;
+}
+
+.Cart-item .Cart{
+  width: auto;
+}
+
+.Cart-item__remove{
+  margin-right: var(--s-xxs);
+}
+
+.Cart-item__remove .Icon{
+  color: var(--c-black);
+}
+
+
 
 
 

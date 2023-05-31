@@ -53,7 +53,9 @@ function get_layout(){
     "home" => LAYOUTS_PATH ."index.php",
     "tienda" => LAYOUTS_PATH ."tienda.php",
     "contacto" => LAYOUTS_PATH ."contacto.php",
-    "categorias" => LAYOUTS_PATH ."categorias.php"
+    "categorias" => LAYOUTS_PATH ."categorias.php",
+    "search" => LAYOUTS_PATH ."search.php",
+    "carrito" => LAYOUTS_PATH ."carrito.php",
   ];
   $target = $_GET['page'];
   
@@ -113,12 +115,6 @@ function get_page_nav(){
   return "<ul class='Header__nav'>$links</ul>";
 }
 
-function get_url_vars( string $var = '' ){
-  if( isset($_GET) ){
-    print_r( $_GET );
-  }
-}
-
 /**
  * Función general para redireccionar al usuario a las diferentes páginas del sitio
  * 
@@ -143,42 +139,162 @@ function redirect( string $page_title = "", bool $back = false ){
   return;
 }
 
-# Funciones de la tienda
+#######################################
+#                                     #
+# Functiones de la tienda             #
+#                                     #
+#######################################
 
 /**
  * Añade productos o actualiza el carrito de compras
  * 
+ * Si el id del `$item` no existe en el carrito, lo añade, si el id del `$item` ya existe en el carrito comprueba si `$update` es `true`, de ser así, `actualizará` la cantidad de unidades, si no, `Añadirá` nuevas unidades
+ * 
  * @param array $cart Array del carrito de compras
- * @param array $item Información del producto que se añadirá o actualizará
+ * @param array $item Información del producto que se añadirá
+ * @param bool $update Define true si se actualizará las unidades de un producto
  * 
  * @return mixed Carrito de compras actualizado
  */
-function set_value( array $cart, array $item ){
+function update_cart( array $cart, array $item, bool $update = false ){
 
   $id = $item['id'];
   $units = $item['units'];
+  $name = $item['name'];
+  $img = $item['img'];
+  $price = $item['price'];
   $max = $item['max'];
 
   // Finaliza si uno de los dos parámetros está vacío
   if( empty($id) || empty($units) ){ return null; }
 
   foreach ($cart as $key => $product) {
-    // Si el producto ya existe en el carrito, actualiza las unidades
+    // Si el producto ya existe en el carrito
     if ( $product['id'] === $id ){
-      $new_quantity = $cart[$key]['units'] + $units;
+      // Para actualizar unidades
+      if( $update === true ){
+        $new_quantity = $units;
+      // Para añadir unidades
+      } else {
+        $new_quantity = $cart[$key]['units'] + $units;
+      }
+
       $cart[$key]['units'] = $new_quantity >= $max ? $max : $new_quantity; 
 
       return $cart;
     }
   }
   
-  $cart[] = array( "id" => $id, "units" => $units );
+  $cart[] = array( 
+    "id" => $id, 
+    "units" => $units,
+    "name" => $name,
+    "img" => $img,
+    "price" => $price,
+    "max" => $max
+  );
+
   return $cart;
+}
+
+/**
+ * Elimina un producto del carrito de compras
+ * 
+ * @param array $cart Array del carrito de compras
+ * @param array $id Id del producto que se eliminará del carrito de compras
+ * 
+ * @return mixed Carrito de compras actualizado
+ */
+function remove_cart_item( array $cart, int $id ){
+
+  foreach ($cart as $key => $product) {
+    // Elimina del carrito el producto que coincida con el id especificado
+    if ( $product['id'] == $id ){
+      unset($cart[$key]);
+      return $cart;
+    }
+  }
+
+  return $cart;
+}
+
+/**
+ * Obtiene la cantidad de productos añadidos al carrito
+ * 
+ * @return mixed Devuelve `empty` si el carrito está vacío, o un entero si se encuentran productos
+ */
+function get_cart_units(){
+  session_start();
+  if( isset($_SESSION['cart']) ){
+    return count($_SESSION['cart']) != 0 ? count($_SESSION['cart']) : 'empty';
+  }
+  return 'empty';
+}
+
+/**
+ * Devuelve una cadena html con los items añadidos al carrito
+ * 
+ * @return string
+ */
+function get_cart_items(){
+  session_start();
+
+  $cart = $_SESSION['cart'];
+  $target = SITE_URL ."inc/cart.php";
+  $output = "";
+
+  if( !isset($_SESSION['cart']) || count($_SESSION['cart']) == 0){ 
+    return "<h1>Aún no has agregado productos a tu carrito.</h1>"; 
+  }
+  
+  foreach ($cart as $product) {
+    $id = $product['id'];
+    $name = $product['name'];
+    $price = $product['price'];
+    $units = $product['units'];
+    $max_units = $product['max'];
+    $img = $product['img'];
+
+    $output .= "
+      <div class='Cart-item'>
+        <div class='Cart-item__section'>
+          <img src='$img' alt='$name' class='Cart-item__img'>
+          <div class='Cart-item__info'>
+            <h2 class='Cart-item__title'>$name</h2>
+            <p class='Cart-item__price'>$$price x <strong class='Cart-item__units'>$units</strong></h2>
+          </div>
+        </div>
+        <div class='Cart-item__section'>
+          <form class='Cart' method='POST' action='$target'>
+            <input type='hidden' name='id' value='$id'>
+            <input type='hidden' name='units' value='$units'>
+            <input type='hidden' name='max' value='$max_units'>
+            <div class='Qty'>
+              <span class='Qty__display'>$units</span>
+              <span class='Qty__buttons'>
+                <span class='Qty__button Qty__button--add'> + </span>
+                <span class='Qty__button Qty__button--remove'> - </span>
+              </span>
+            </div>
+            <input class='Cart__add Button' type='submit' name='updateCart' value='Actualizar'>
+          </form>
+          <a class='Cart-item__remove' href='$target?id=$id'><i class='Icon fa-solid fa-trash'></i></a>
+        </div>
+      </div>
+    ";
+  }
+
+  return $output;
+}
+
+
+function get_cart_totals(){
+
 }
 
 #######################################
 #                                     #
-# Para obtener un elementos generales #
+# Para obtener elementos generales    #
 #                                     #
 #######################################
 
@@ -504,6 +620,9 @@ function the_products( array $products ){
           <form class='Cart' method='POST' action='$target'>
             <input type='hidden' name='id' value='$id'>
             <input type='hidden' name='units' value='0'>
+            <input type='hidden' name='name' value='$name'>
+            <input type='hidden' name='img' value='$img'>
+            <input type='hidden' name='price' value='$price'>
             <input type='hidden' name='max' value='$units'>
             <div class='Qty'>
               <span class='Qty__display'>0</span>

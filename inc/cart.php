@@ -2,12 +2,12 @@
 
 require "config.php";
 
-# Para añadir productos o actualizar unidades del carrito de compras 
-if (isset($_POST['addToCart'])){
+# Para añadir productos o añadir unidades del carrito de compras 
+if(isset($_POST['addToCart'])){
 
   session_start();
   $cart = $_SESSION['cart'] ? $_SESSION['cart'] : [];   
-  $updated_cart = set_value( $cart, $_POST );
+  $updated_cart = update_cart( $cart, $_POST );
 
   if( $updated_cart !== null ){
     $_SESSION['cart'] = $updated_cart;
@@ -17,5 +17,37 @@ if (isset($_POST['addToCart'])){
   return;
 }
 
-redirect();
+# Para actualizar las unidades de un producto del carrito de compras
+if(isset($_POST['updateCart'])){
+
+  session_start();
+  $cart = $_SESSION['cart'];   
+  $updated_cart = update_cart( $cart, $_POST, true );
+
+  if( $updated_cart !== null ){
+    $_SESSION['cart'] = $updated_cart;
+  }
+
+  redirect( "", true );
+  return;
+}
+
+# Par remover un producto del carrito de compras
+if(isset($_GET['id'])){
+  
+  session_start();
+  $product_id = $_GET['id'];
+  $cart = $_SESSION['cart'];
+
+  if ( !isset($cart) ){ return; }
+
+  $updated_cart = remove_cart_item( $cart, $product_id );
+
+  $_SESSION['cart'] = $updated_cart;
+
+  redirect( "", true );
+  return;
+}
+
+// redirect();
 
