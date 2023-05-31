@@ -2,7 +2,7 @@
 
 require "config.php";
 
-# Para añadir productos o añadir unidades del carrito de compras 
+# Para añadir productos o añadir unidades de un producto ya existente en el carrito de compras 
 if(isset($_POST['addToCart'])){
 
   session_start();
@@ -32,7 +32,7 @@ if(isset($_POST['updateCart'])){
   return;
 }
 
-# Par remover un producto del carrito de compras
+# Para remover un producto del carrito de compras
 if(isset($_GET['id'])){
   
   session_start();
@@ -49,5 +49,5 @@ if(isset($_GET['id'])){
   return;
 }
 
-// redirect();
+redirect();
 
