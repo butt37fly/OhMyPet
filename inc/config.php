@@ -6,7 +6,7 @@ require_once "functions.php";
 define('SITE_TITLE' , 'OhMyPet' );
 define('SITE_URL' , 'http://localhost/OhMyPet/' );
 
-define('MAX_UPLOAD_SIZE' , 20000 );
+define('MAX_UPLOAD_SIZE' , 1500000 );
 
 define('ROOT_PATH', getcwd() .'/' );
 define('LAYOUTS_PATH', ROOT_PATH .'layouts/' );

@@ -480,21 +480,60 @@ body.ready .Overlay{
 
 /*** Form ***/
 
-.Form{
+.Form-container__header{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--s-xs);
+}
 
+.Form-container__header * {
+  text-align: center;
+}
+
+.Form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s-l);
+}
+
+.Form__section{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s-s);
 }
 
 .Form__field{
   width: auto;
   height: auto;
+  flex: 1 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
 }
 
+.Form__field label{
+  margin-bottom: var(--s-xxs);
+  cursor: pointer;
+}
+
+.Form__field:has(
+  input[required], 
+  select
+  ) label:after{
+  content: "*";
+  margin-left: 3px;
+  color: red;
+}
+
 .Form__input{
-  width: auto;
+  width: 100%;
   padding: 10px 15px;
   outline: unset;
   border: var(--d-border);
@@ -691,4 +730,76 @@ body.ready .Overlay{
 
 .Table td a{
   margin: 0 7px;
+}
+
+.Table [data-target="productsModal"]{
+  cursor: pointer;
+}
+
+/*** Modal ***/
+
+.Modal{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 15;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.Modal--active{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.Modal__overlay{
+  width: inherit;
+  height: inherit;
+  position: absolute;
+  background-color: var(--c-black--15);
+}
+
+.Modal__wrapper{
+  width: auto;
+  height: auto;
+  position: relative;
+  padding: var(--s-l);
+  border: var(--d-border);
+  border-radius: var(--d-border-radius);
+  background-color: var(--c-white);
+}
+
+.Modal__wrapper .closeButton{
+  position: absolute;
+  top: var(--s-xs);
+  right: var(--s-xs);
+  font-size: var(--f-title);
+  color: var(--c-grey-1);
+  cursor: pointer;
+}
+
+.Modal__wrapper .closeButton:hover{
+  color: var(--c-grey-2);
+}
+
+.Shortcut{
+  width: auto;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: var(--s-l);
+  bottom: var(--s-l);
+}
+
+.Shortcut .Icon{
+  color: var(--c-pink);
+  font-size: calc(var(--f-title) * 2);
+  cursor: pointer;
 }

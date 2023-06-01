@@ -10,13 +10,9 @@
 
     get_template( "admin/products" );
     
-  } elseif ( $view === "users"){
-
-    get_template( "admin/users" );
-
   } else {
 
-    echo "si";
+    redirect();
 
   } ?>
 

@@ -30,7 +30,7 @@
 
         <?php if ( is_admin() ): ?>
 
-          <a href="<?php echo ADMIN; ?>">
+          <a href="<?php echo ADMIN ."products/"; ?>">
             <i class="Icon fa-solid fa-gear"></i>
           </a>
 

@@ -16,6 +16,9 @@ if( isset($_POST['createProduct']) ){
     redirect( "", true );
     return;
   }
+
+  redirect( "", true);
+  return;
 }
 
 

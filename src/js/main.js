@@ -30,6 +30,10 @@ function BodyFunctions() {
   if( document.querySelector("#search-form")){
     SearchInput();
   }
+
+  if( document.querySelector("[data-target]")){
+    Modal();
+  }
 }
 
 /**
@@ -121,7 +125,7 @@ function Cart(){
   });
 }
 
-/*
+/**
  * Controla el funcionamiento de la barra de busqueda
  */
 function SearchInput(){
@@ -176,4 +180,29 @@ function SearchInput(){
       submitForm( value );
     } 
   });
+}
+
+/**
+ * Controla la apertura y cierre de los modales
+ */
+function Modal(){
+  const handler = ( openButton ) => {
+    const open = ( el ) => el.classList.add( 'Modal--active' )
+    const close = ( el ) => el.classList.remove( 'Modal--active' )
+    
+    const modal = document.getElementById( openButton.dataset.target);
+    if( !modal ){ return }
+
+    const closeButton = modal.querySelector('.closeButton')
+    const overlay = modal.querySelector('.Modal__overlay')
+
+    openButton.addEventListener('click', () => open(modal))
+    closeButton.addEventListener('click', () => close(modal))
+    overlay.addEventListener('click', () => close(modal))
+  }
+
+  const trigger = document.querySelectorAll('[data-target]')
+  if ( !trigger || !trigger.length > 0 ){ return }
+  
+  trigger.forEach( (el) => handler(el) );
 }

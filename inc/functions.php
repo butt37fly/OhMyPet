@@ -672,7 +672,7 @@ function the_products( array $products ){
     $price = $product['price'];
     $units = $product['units'];
     $content = $product['content'];
-    $img = IMG_URI ."placeholder.png";
+    $img = $product['img'];
 
     $target = SITE_URL ."inc/cart.php";
 
@@ -820,7 +820,7 @@ function create_user( array $form ){
     return true;
 
   } catch (\Throwable $th) {
-    return "Vaya, parece que algo ha salido mal :(";
+    return "¡Vaya!, parece que algo ha salido mal, por favor inténtalo nuevamente.";
   }
 }
 
@@ -930,14 +930,13 @@ function admin_products(){
 
   foreach ($products as $product) {
     $id = $product['id'];
-    $img =  IMG_URI ."placeholder.png";
+    $img =  $product['img'];
     $name = $product['name'];
     $price = $product['price'];
     $units = $product['units'];
     $content = $product['content'];
     $pet = get_pet( $product['pet'] )['name'];
     $category = get_category($product['category'])['name'];
-    $edit = SITE_URL ."inc/products.php";
     $delete = SITE_URL ."inc/products.php?action=delete&id=$id";
 
     $items .= "
@@ -951,12 +950,11 @@ function admin_products(){
         <td>$pet</td>
         <td>$category</td>
         <td>
-          <i id='$id' class='fa-solid fa-pen'></i>
-          <a href='$delete'><i class='fa-solid fa-trash'></i></a>
+          <i id='$id' class='Icon fa-solid fa-pen' data-target='productsModal'></i>
+          <a href='$delete'><i class='Icon fa-solid fa-trash'></i></a>
         </td>
       </tr>
     ";
-
   }
   
   $output = "  
@@ -983,44 +981,106 @@ function admin_products(){
   return $output;
 }
 
-function create_product( array $product ){
-  # print_r( $product );
-
+function validate_product( array $product ){
   $name = trim($product['name']);
+  $pet = get_pet( (int)$product['pet'] );
+  $category = get_category( (int)$product['category'] );
   $price = $product['price'];
-  $content = trim($product['content']);
   $units = $product['units'];
-  $pet = (int)$product['pet'];
-  $category = (int)$product['category'];
-  $img_directory = "../src/img/products/";
+  $content = trim($product['content']);
 
-  # $image = isset($product['image']) ? trim($product['image']) : 'placeholder.png';
+  $img = $_FILES['image'];
+  $img_rute = IMG_URI ."placeholder.png";
   
+  // Valida si los campos están vacíos
   if ( empty($name) || empty($price) || empty($units) || empty($pet) || empty($category) ){
     return "Debes rellenar todos los campos obligatorios.";
   }
 
-  if( get_pet( $pet ) === false ){
+  // Valida si existe la mascota seleccionada
+  if( $pet === false ){
     return "Aún no admitimos este tipo de mascota, intenta añadirla a la lista.";
   }
   
-  if( get_category( $category ) === false ){
+  // Valida si existe la categoría seleccionada
+  if( $category === false ){
     return "Aún no contamos con esta categoría, intenta añadirla a la lista.";
   }
 
-  if( !file_exists( $img_directory ) ){
-    mkdir( $img_directory, 0777, true );
+  // Valida si se añadió una imagen
+  if ( isset($img) ){   
+    $directory = "../src/img/products/$pet[slug]/$category[slug]";
+    $type = strtolower(pathinfo($img['name'], PATHINFO_EXTENSION));
+    $size = $img['size'];
+
+    // Verifica el formato de imagen
+    if( $type !== "jpg" && $type !== "jpeg" && $type !== "png" && $type !== "webp" ){
+      return "El formato de archivo de tu imagen no está permitido. Intenta subir un archivo 'jpg', 'jpeg', 'png' o 'webp'.";
+    }
+
+    // Verifica el tamaño del archivo
+    if ( $size > MAX_UPLOAD_SIZE ){
+      return "El tamaño de tu imagen no es válido, intenta subir un archivo inferior a '1MB'";
+    }
+  
+    // Verifica si el directorio existe
+    if( !file_exists( $directory ) ){
+      mkdir( $directory, 0777, true );
+    }
+
+    // Intenta guardar la imagen
+    if ( move_uploaded_file( $img['tmp_name'], $directory ."/$img[name]" ) === false ){
+      return "No se ha podido cargar la imagen del producto, por favor inténtalo de nuevo.";
+    }
+
+    // Uri final donde se almacena el archivo
+    $img_rute = IMG_URI ."products/$pet[slug]/$category[slug]/$img[name]";
   }
 
-  print_r( $_FILES );
+  return array(
+    "name" => $name, 
+    "pet" => $pet['id'], 
+    "category" => $category['id'], 
+    "price" => $price, 
+    "units" => $units, 
+    "content" => $content, 
+    "img" => $img_rute
+  );
+}
 
+function create_product( array $product ){
 
+  $data = validate_product( $product );
+
+  if( gettype($data) === "string" ){
+    return $data;
+  }
   
+  $pdo = db_connect();
 
+  if (gettype( $pdo ) !== 'object'){
+    return print_r($pdo);
+  }
 
+  $query = "INSERT INTO `products` (name, pet, category, price, units, content, img) VALUES (:name, :pet, :category, :price, :units, :content, :img)";
+  $consult = $pdo->prepare( $query );
+  $bind_params = array(
+    ":name" => $data['name'], 
+    ":pet" => $data['pet'], 
+    ":category" => $data['category'], 
+    ":price" => $data['price'], 
+    ":units" => $data['units'], 
+    ":content" => $data['content'], 
+    ":img" => $data['img']
+  );
 
+  try {
+    $consult->execute( $bind_params );
+    return true;
 
-  return false;
+  } catch (\Throwable $th) {
+    return "¡Vaya!, parece que hemos tenido problemas al añadir tu producto, por favor inténtalo nuevamente.";
+  }
 }
 
 function delete_product( int $id ){
