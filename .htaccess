@@ -11,3 +11,5 @@ RewriteRule ^categorias/([a-zA-Z]{2,24})/$ index.php?page=categorias&category=$1
 RewriteRule ^search/(([^&]*){2,24})/$ index.php?page=search&search=$1
 
 RewriteRule ^cuenta/([a-zA-Z]{2,24})/$ index.php?page=cuenta&action=$1
+
+RewriteRule ^admin/([a-zA-Z]{2,24})/$ index.php?page=admin&view=$1

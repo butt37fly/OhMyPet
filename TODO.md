@@ -4,3 +4,6 @@
 - Action when purchase is completed
 - Dynamic color in boton filters
 - Encrypt passwords
+- 404 layout
+- Not founded products layout
+- Page footer

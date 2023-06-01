@@ -82,6 +82,7 @@ function get_layout(){
     "search" => LAYOUTS_PATH ."search.php",
     "carrito" => LAYOUTS_PATH ."carrito.php",
     "cuenta" => LAYOUTS_PATH ."cuenta.php",
+    "admin" => LAYOUTS_PATH ."admin.php",
   ];
   $target = $_GET['page'];
   
@@ -571,7 +572,7 @@ function get_category( mixed $category ){
  */
 function get_pet( mixed $pet ){
   $pdo = db_connect();
-
+  
   if (gettype( $pdo ) !== 'object'){
     print_r($pdo);
     return;
@@ -581,7 +582,7 @@ function get_pet( mixed $pet ){
   if ( !$pet || empty($pet) ){ 
     return false; 
   }
-
+  
   if ( gettype($pet) === 'integer' && $pet !== 0 ){
     $query = 'SELECT * FROM `pets` WHERE id = :pet_id';
     $consult = $pdo->prepare( $query );
@@ -884,11 +885,25 @@ function login_user( string $name, string $role ){
 }
 
 /**
- * Devuelve `true` si el usuario ha iniciado sesión, del o contrario devuelve `false`
+ * Devuelve `true` si el usuario ha iniciado sesión, delo contrario devuelve `false`
  */
 function is_logedin(){
   session_start();
   return isset($_SESSION['user']) ? true : false;
+}
+
+/**
+ * Devuelve `true` si el usuario posee el rol de `admin`, delo contrario devuelve `false`
+ */
+function is_admin(){
+  session_start();
+  $user = $_SESSION['user'];
+
+  if( !isset($user) ){
+    return false;
+  }
+
+  return $user['role'] === 'admin' ? true : false;
 }
 
 /**
@@ -898,4 +913,138 @@ function logout_user(){
   session_start();
   unset($_SESSION['user']);
   redirect();
+}
+
+#######################################
+
+#######################################
+#                                     #
+# Funciones de la administración      #
+#                                     #
+#######################################
+
+function admin_products(){
+  
+  $products = get_products();
+  $items = "";
+
+  foreach ($products as $product) {
+    $id = $product['id'];
+    $img =  IMG_URI ."placeholder.png";
+    $name = $product['name'];
+    $price = $product['price'];
+    $units = $product['units'];
+    $content = $product['content'];
+    $pet = get_pet( $product['pet'] )['name'];
+    $category = get_category($product['category'])['name'];
+    $edit = SITE_URL ."inc/products.php";
+    $delete = SITE_URL ."inc/products.php?action=delete&id=$id";
+
+    $items .= "
+      <tr>
+        <td>$id</td>
+        <td><img src='$img' alt='$name'></td>
+        <td>$name</td>
+        <td>$price</td>
+        <td>$units</td>
+        <td>$content</td>
+        <td>$pet</td>
+        <td>$category</td>
+        <td>
+          <i id='$id' class='fa-solid fa-pen'></i>
+          <a href='$delete'><i class='fa-solid fa-trash'></i></a>
+        </td>
+      </tr>
+    ";
+
+  }
+  
+  $output = "  
+    <table class='Table Table--products'>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Unidades</th>
+          <th>Contenido</th>
+          <th>Mascota</th>
+          <th>Categoría</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        $items
+      </tbody>
+    </table>
+  ";
+
+  return $output;
+}
+
+function create_product( array $product ){
+  # print_r( $product );
+
+  $name = trim($product['name']);
+  $price = $product['price'];
+  $content = trim($product['content']);
+  $units = $product['units'];
+  $pet = (int)$product['pet'];
+  $category = (int)$product['category'];
+  $img_directory = "../src/img/products/";
+
+  # $image = isset($product['image']) ? trim($product['image']) : 'placeholder.png';
+  
+  if ( empty($name) || empty($price) || empty($units) || empty($pet) || empty($category) ){
+    return "Debes rellenar todos los campos obligatorios.";
+  }
+
+  if( get_pet( $pet ) === false ){
+    return "Aún no admitimos este tipo de mascota, intenta añadirla a la lista.";
+  }
+  
+  if( get_category( $category ) === false ){
+    return "Aún no contamos con esta categoría, intenta añadirla a la lista.";
+  }
+
+  if( !file_exists( $img_directory ) ){
+    mkdir( $img_directory, 0777, true );
+  }
+
+  print_r( $_FILES );
+
+
+  
+
+
+
+
+  return false;
+}
+
+function delete_product( int $id ){
+  $pdo = db_connect();
+
+  if (gettype( $pdo ) !== 'object'){
+    return print_r($pdo);
+  }
+
+  $query = 'SELECT id FROM `products` WHERE id = :id_product';
+  $consult = $pdo->prepare( $query );
+  $consult->bindValue( ":id_product", $id );
+  $consult->execute();
+  $result = $consult->fetch();
+
+  if( !empty($result) ){
+    $query = "DELETE FROM `products` WHERE id = :id_product";
+    $consult = $pdo->prepare( $query );
+    $consult->bindValue( ":id_product", $id );
+    $consult->execute();
+  }
+  
+  $pdo = null;
+  $result = null;
+  return;
+
 }

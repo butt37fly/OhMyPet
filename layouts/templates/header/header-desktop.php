@@ -27,6 +27,14 @@
       </a>
       
       <?php if ( is_logedin() ): ?>
+
+        <?php if ( is_admin() ): ?>
+
+          <a href="<?php echo ADMIN; ?>">
+            <i class="Icon fa-solid fa-gear"></i>
+          </a>
+
+        <?php endif; ?> 
       
         <a href="<?php echo SITE_URL ."inc/user.php?logout=true"?>">
           <i class="Icon fa-solid fa-right-from-bracket"></i>

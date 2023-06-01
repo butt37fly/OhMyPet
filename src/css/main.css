@@ -653,13 +653,42 @@ body.ready .Overlay{
 
 /*** Login / Signup ***/
 
+/*** Admin ***/
 
+.Admin-view{
+  width: min(100%, 1200px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: auto;
+  padding: var(--s-xl) var(--s-s);
+}
 
+.Table{
+  table-layout: fixed;
+  width: 100%;
+  border: var(--d-border);
+  border-radius: var(--d-border-radius);
+  background-color: var(--c-white);
+  padding: var(--s-xs);
+}
 
+.Table thead{
+  height: 50px;
+  border-bottom: var(--d-border);
+}
 
+.Table td{
+  text-align: center;
+}
 
+.Table td img{
+  width: 50%;
+  margin: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
 
-
-
-
-
+.Table td a{
+  margin: 0 7px;
+}
