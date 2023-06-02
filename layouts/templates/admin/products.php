@@ -6,7 +6,7 @@
   <section class="Modal" id="productsModal">
     <div class="Modal__overlay"></div>
     <div class="Modal__wrapper">
-      <i class="Icon fa-solid fa-circle-xmark closeButton"></i>
+      <button class="Icon fa-solid fa-circle-xmark closeButton"></button>
       <section class="Form-container">
         <div class="Form-container__header">
           <h2>Añade un nuevo producto</h2>

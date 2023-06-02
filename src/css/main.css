@@ -121,6 +121,11 @@ img{
   object-fit: contain;
 }
 
+button{
+  background-color: unset;
+  border: unset;
+}
+
 /*********************************
  *                               *
  *   --. Animaciones             *

@@ -19,20 +19,24 @@ Init();
  * Condiciona e inicializa las funciones del sitio
  */
 function BodyFunctions() {
-  if (document.querySelector(".Card")) {
+  if(document.querySelector(".Card")) {
     Products();
   }
 
-  if (document.querySelector(".Cart-item")) {
+  if(document.querySelector(".Cart-item")) {
     Cart();
   }
 
-  if( document.querySelector("#search-form")){
+  if(document.querySelector("#search-form")){
     SearchInput();
   }
 
-  if( document.querySelector("[data-target]")){
+  if(document.querySelector("[data-target]")){
     Modal();
+  }
+
+  if(document.querySelector('.editProduct')){
+    EditProduct();
   }
 }
 
@@ -202,7 +206,167 @@ function Modal(){
   }
 
   const trigger = document.querySelectorAll('[data-target]')
-  if ( !trigger || !trigger.length > 0 ){ return }
+  if ( !trigger || !trigger.length > 0 ) return
   
+  trigger.forEach( (el) => handler(el) );
+}
+
+/**
+ * Modifica la información del modal para editar el producto seleccionado
+ */
+function EditProduct(){
+  // Selecciona cada botón para editar producto
+  const trigger = document.querySelectorAll( '.editProduct' )
+  if( !trigger || !trigger.length > 0 ) return
+
+  /**
+   * Obtiene la información del producto a actualizar
+   * 
+   * @param {HTMLElement} reference Botón `editar`, a partir de este se selecciona toda la información correspondiente del producto
+   * @returns
+   */
+  const getData = ( reference ) => {
+    const table = (reference.parentNode).parentNode
+    const product = {
+      id : table.querySelector("[data-content='id']").textContent,
+      img : table.querySelector("[data-content='img'] img").src,
+      name : table.querySelector("[data-content='name']").textContent,
+      price : table.querySelector("[data-content='price']").textContent,
+      units : table.querySelector("[data-content='units']").textContent,
+      content : table.querySelector("[data-content='content']").textContent,
+      pet : table.querySelector("[data-content='pet']").textContent,
+      category : table.querySelector("[data-content='category']").textContent
+    }
+
+    return product
+  }
+
+  /**
+   * Asigna en los campos del formulario del modal la información obtenida con `getData()`
+   * 
+   * Devuelve un Objeto con todos los campos del formulario y la información por defecto del `título` y el `botón submit` del mismo
+   * 
+   * @param {HTMLElement} container Modal donde se asignará la información
+   * @param {object} data Información a asignar en el modal
+   * @returns 
+   */
+  const setData = ( container,  data ) => {
+    // Crea el campo del id del producto en el formulario
+    const form = container.querySelector('.Form')
+    form.insertAdjacentHTML('afterbegin', '<input type="hidden" name="id" value></input>');
+
+    // Almacena todos los campos del formulario
+    const fields = {
+      id : container.querySelector( 'input[name="id"]' ),
+      title : container.querySelector( 'h2' ),
+      name : container.querySelector( 'input[name="name"]' ),
+      price : container.querySelector( 'input[name="price"]' ),
+      content : container.querySelector( 'input[name="content"]' ),
+      units : container.querySelector( 'input[name="units"]' ),
+      pet : container.querySelector( 'select[name="pet"]' ),
+      category : container.querySelector( 'select[name="category"]' ),
+      button : container.querySelector( 'input[type="submit"]' )
+    }
+
+    // Almacena los valores por defecto del formulario
+    const defaultValues = {
+      title : fields.title.textContent,
+      text : fields.button.value,
+      name : fields.button.name
+    }
+
+    const setSelect = ( select, value ) => {
+      const options = select.querySelectorAll('option');
+      options.forEach((el) => {
+        if (el.textContent === value) el.setAttribute( 'selected', true )
+      })
+    }
+
+    // Asigna el id del producto al modal
+    fields.id.value = data.id
+
+    // Cambia el título del modal
+    fields.title.textContent = "Actualiza este producto"
+
+    // Asigna los valores del producto en los inputs correspondientes
+    fields.name.value = data.name
+    fields.price.value = data.price
+    fields.content.value = data.content
+    fields.units.value = data.units
+
+    // Asgina los valores del producto en las listas correspondientes
+    setSelect( fields.pet, data.pet )
+    setSelect( fields.category, data.category )
+
+    // Cambia los datos del botón
+    fields.button.value = "Actualizar"
+    fields.button.name = "updateProduct"
+
+    return { fields, defaults: defaultValues }
+  }
+
+  /**
+   * Reestablece la información del modal
+   * 
+   * @param {HTMLElement} container Modal donde se reestablecerá la información
+   * @param {HTMLElement} param1 Objeto con la información de los campos del formulario y los valores por defecto 
+   */
+  const clearData = ( container, { fields, defaults } ) => {
+    const button = container.querySelector('.closeButton')
+    const overlay = container.querySelector('.Modal__overlay')
+
+    const close = () => container.classList.remove('Modal--active')
+    const reset = () => {
+      const resetSelect = (el) => {
+        const options = el.querySelectorAll('option')
+        options.forEach( (item) => item.removeAttribute("selected") )
+      }
+
+      // Elimina el campo del id del producto
+      fields.id.remove()
+
+      // Asigna los valores por defecto al modal
+      fields.title.textContent = defaults.title
+      fields.button.value = defaults.text
+      fields.button.name = defaults.name
+
+      // Reinicia el valor de los inputs
+      fields.name.value = ''
+      fields.price.value = ''
+      fields.content.value = ''
+      fields.units.value = ''
+
+      // Reinicia el valor de las listas
+      resetSelect( fields.pet )
+      resetSelect( fields.category )
+    }
+
+    button.addEventListener( 'click', () => {
+      close()
+      setTimeout( reset, 350 )
+    })
+
+    overlay.addEventListener( 'click', () => {
+      close()
+      setTimeout( reset, 350 )
+    })
+  }
+
+  /**
+   * Define un `onclick()` para el elemento `button`
+   * Abre el modal para modificar la información del producto
+   * 
+   * @param {HTMLElement} button 
+   */
+  const handler = ( button ) => {
+    button.addEventListener( 'click', () => {
+      const modal = document.getElementById( button.dataset.target )
+      const product = getData( button )
+      const data = setData( modal, product )
+
+      clearData( modal, data )
+    })
+  }
+
   trigger.forEach( (el) => handler(el) );
 }

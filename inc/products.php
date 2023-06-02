@@ -16,12 +16,20 @@ if( isset($_POST['createProduct']) ){
     redirect( "", true );
     return;
   }
-
-  redirect( "", true);
-  return;
 }
 
+if( isset($_POST['updateProduct']) ){
+  $result = update_product( $_POST );
+  if( gettype($result) === 'string' ){
+    session_start();
+    $_SESSION['msg'] = array( "content" => $result, "type" => "error" );
+    redirect( "", true );
+    return;
+  }
+}
 
+redirect( "", true);
+return;
 
 
 ?>

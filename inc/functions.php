@@ -941,16 +941,16 @@ function admin_products(){
 
     $items .= "
       <tr>
-        <td>$id</td>
-        <td><img src='$img' alt='$name'></td>
-        <td>$name</td>
-        <td>$price</td>
-        <td>$units</td>
-        <td>$content</td>
-        <td>$pet</td>
-        <td>$category</td>
-        <td>
-          <i id='$id' class='Icon fa-solid fa-pen' data-target='productsModal'></i>
+        <td data-content='id'>$id</td>
+        <td data-content='img'><img src='$img' alt='$name'></td>
+        <td data-content='name'>$name</td>
+        <td data-content='price'>$price</td>
+        <td data-content='units'>$units</td>
+        <td data-content='content'>$content</td>
+        <td data-content='pet'>$pet</td>
+        <td data-content='category'>$category</td>
+        <td data-content='actions'>
+          <button class='Icon fa-solid fa-pen editProduct' data-target='productsModal'></button>
           <a href='$delete'><i class='Icon fa-solid fa-trash'></i></a>
         </td>
       </tr>
@@ -982,6 +982,7 @@ function admin_products(){
 }
 
 function validate_product( array $product ){
+  $id = isset($product['id']) ? $product['id'] : null;
   $name = trim($product['name']);
   $pet = get_pet( (int)$product['pet'] );
   $category = get_category( (int)$product['category'] );
@@ -1008,10 +1009,13 @@ function validate_product( array $product ){
   }
 
   // Valida si se añadió una imagen
-  if ( isset($img) ){   
+  if ( !empty($img['name']) ){   
     $directory = "../src/img/products/$pet[slug]/$category[slug]";
     $type = strtolower(pathinfo($img['name'], PATHINFO_EXTENSION));
     $size = $img['size'];
+    
+    $img_name = str_replace(" ", "-", $img['name']); 
+    $img_name = preg_replace("([^A-Za-z0-9\.\-])", "", $img_name); 
 
     // Verifica el formato de imagen
     if( $type !== "jpg" && $type !== "jpeg" && $type !== "png" && $type !== "webp" ){
@@ -1029,15 +1033,16 @@ function validate_product( array $product ){
     }
 
     // Intenta guardar la imagen
-    if ( move_uploaded_file( $img['tmp_name'], $directory ."/$img[name]" ) === false ){
+    if ( move_uploaded_file( $img['tmp_name'], $directory ."/$img_name" ) === false ){
       return "No se ha podido cargar la imagen del producto, por favor inténtalo de nuevo.";
     }
 
     // Uri final donde se almacena el archivo
-    $img_rute = IMG_URI ."products/$pet[slug]/$category[slug]/$img[name]";
+    $img_rute = IMG_URI ."products/$pet[slug]/$category[slug]/$img_name";
   }
 
   return array(
+    "id" => $id,
     "name" => $name, 
     "pet" => $pet['id'], 
     "category" => $category['id'], 
@@ -1047,6 +1052,7 @@ function validate_product( array $product ){
     "img" => $img_rute
   );
 }
+
 
 function create_product( array $product ){
 
@@ -1080,6 +1086,64 @@ function create_product( array $product ){
 
   } catch (\Throwable $th) {
     return "¡Vaya!, parece que hemos tenido problemas al añadir tu producto, por favor inténtalo nuevamente.";
+  }
+}
+
+function update_product( array $product ){
+
+  $data = validate_product( $product );
+  $img_rute = IMG_URI ."placeholder.png";
+
+  if( $data['id'] === null ){
+    return "¡Vaya!, parece que algo ha salido mal, por favor inténtalo nuevamente.";
+  }
+
+  $pdo = db_connect();
+
+  if (gettype( $pdo ) !== 'object'){
+    return print_r($pdo);
+  }
+
+  /**
+   * 'validate_product()' devueleve la imagen por defecto si no se ha especificado una nueva, así que se utiliza la ruta de esta misma para validar si el usuario ha intentado actualizarla
+   */ 
+  if ( $img_rute === $data['img'] ){
+
+    $query = "UPDATE `products` SET name = :name, pet = :pet, category = :category, price = :price, units = :units, content = :content WHERE id = :id";
+    $consult = $pdo->prepare( $query );
+    $bind_params = array(
+      ":name" => $data['name'], 
+      ":pet" => $data['pet'], 
+      ":category" => $data['category'], 
+      ":price" => $data['price'], 
+      ":units" => $data['units'], 
+      ":content" => $data['content'],
+      ":id" => $data['id']
+    );
+  } else {
+
+    $query = "UPDATE `products` SET name = :name, pet = :pet, category = :category, price = :price, units = :units, content = :content, img = :img WHERE id = :id";
+    $consult = $pdo->prepare( $query );
+    $bind_params = array(
+      ":name" => $data['name'], 
+      ":pet" => $data['pet'], 
+      ":category" => $data['category'], 
+      ":price" => $data['price'], 
+      ":units" => $data['units'], 
+      ":content" => $data['content'],
+      ":img" => $data['img'],
+      ":id" => $data['id']
+    );
+  }
+
+  try {
+    $consult->execute( $bind_params );
+    return true;
+
+  } catch (\Throwable $th) {
+    
+    echo $th;
+    #return "¡Vaya!, parece que hemos tenido problemas al añadir tu producto, por favor inténtalo nuevamente.";
   }
 }
 
