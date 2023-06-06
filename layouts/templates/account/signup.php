@@ -1,6 +1,6 @@
 <section class="Form-container">
   <div class="Form-container__header">
-    <h2>Crear cuenta</h2>
+    <h2>Crear una cuenta</h2>
     <h5>¿Ya tienes una? haz click <a href="<?php echo ACCOUNT ."login/"?>">aquí</a> para iniciar sesión.</h5>
   </div>
   <form class="Form" method="POST" action="<?php echo SITE_URL ."inc/user.php"?>">

@@ -38,6 +38,10 @@ function BodyFunctions() {
   if(document.querySelector('.editProduct')){
     EditProduct();
   }
+
+  if(document.querySelector('.Form-container')){
+    ValidateForm();
+  }
 }
 
 /**
@@ -369,4 +373,24 @@ function EditProduct(){
   }
 
   trigger.forEach( (el) => handler(el) );
+}
+
+function ValidateForm(){
+  const forms = document.querySelectorAll('.Form-container');
+  if( !forms || !forms.length > 0 ) return
+  
+  forms.forEach( (el) => handler(el) )
+
+  function handler( form ){
+
+
+
+
+
+
+
+
+
+
+  }
 }

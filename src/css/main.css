@@ -108,7 +108,8 @@ h5 {
 
 p,
 span,
-label {
+label,
+h5 {
   font-size: var(--f-text);
 }
 
@@ -279,6 +280,10 @@ body.ready .Overlay{
   width: 100%;
   height: auto;
   min-height: calc(100vh - var(--s-header));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   margin-top: var(--s-header);
 }
 
@@ -491,6 +496,8 @@ body.ready .Overlay{
   justify-content: center;
   align-items: center;
   margin-bottom: var(--s-xs);
+  padding-bottom: var(--s-xs);
+  border-bottom: var(--d-border);
 }
 
 .Form-container__header * {
@@ -560,6 +567,35 @@ body.ready .Overlay{
   cursor: pointer;
 }
 
+.Form__tips{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--s-xxs);
+}
+
+.Form__tips__items{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--s-xxs);
+}
+
+.Form__notices{
+  padding: var(--s-xs);
+  margin-top: var(--s-xs);
+  border: var(--d-border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Form__notices--error{
+  border-color: var(--c-violet);
+}
+
 
 /*********************************
 *                               *
@@ -577,7 +613,6 @@ body.ready .Overlay{
   justify-content: center;
   align-items: center;
   padding-top: var(--s-xl);
-  margin: auto;
 }
 
 .products{
@@ -595,7 +630,6 @@ body.ready .Overlay{
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin: auto;
   padding: var(--s-xl) var(--s-s);
 }
 
@@ -696,6 +730,20 @@ body.ready .Overlay{
 }
 
 /*** Login / Signup ***/
+
+.Account{
+  width: 100%;
+  padding: var(--s-l) 0;
+}
+
+.Account .Form-container{
+  width: min(100%, 700px);
+  margin: auto;
+  padding: var(--s-xl);
+  background: var(--c-white);
+  border: var(--d-border);
+  border-radius: var(--d-border-radius);
+}
 
 /*** Admin ***/
 
@@ -808,3 +856,4 @@ body.ready .Overlay{
   font-size: calc(var(--f-title) * 2);
   cursor: pointer;
 }
+

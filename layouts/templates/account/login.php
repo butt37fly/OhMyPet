@@ -1,7 +1,7 @@
 <section class="Form-container">
-  <div class="Form-container__header">
-    <h2>Inicia sesión en tu cuenta</h2>
-    <h5>¿Aún no tienes una? haz click <a href="<?php echo ACCOUNT ."signup/"?>">aquí</a> para registrarte.</h5>
+  <div class="Form-container__header ">
+    <h2>Iniciar sesión</h2>
+    <h5>¿Aún no tienes una cuenta? haz click <a href="<?php echo ACCOUNT ."signup/"?>">aquí</a>.</h5>
   </div>
   <form class="Form" method="POST" action="<?php echo SITE_URL ."inc/user.php"?>">
     <div class="Form__section">
